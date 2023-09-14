@@ -107,12 +107,12 @@ public class Lab1Controller {
       // REACT: Set motor speeds according to the current state
       switch (desiredTurn) {
         case SPIN_LEFT:
-          leftMotor.setVelocity(-MAX_SPEED);
-          rightMotor.setVelocity(MAX_SPEED);
+          leftMotor.setVelocity(-1 * MAX_SPEED * 0.5);
+          rightMotor.setVelocity(MAX_SPEED * 0.5);
           break;
         case SPIN_RIGHT:
-          leftMotor.setVelocity(MAX_SPEED);
-          rightMotor.setVelocity(-MAX_SPEED);
+          leftMotor.setVelocity(MAX_SPEED * 0.5);
+          rightMotor.setVelocity(-1 * MAX_SPEED * 0.5);
           break;
         case CURVE_LEFT:
           leftMotor.setVelocity(MAX_SPEED * 0.75);

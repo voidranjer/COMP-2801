@@ -1,0 +1,194 @@
+#VRML_SIM R2024a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/balls/protos/Ball.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/kitchen/breakfast/protos/BiscuitBox.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/school_furniture/protos/Book.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/drinks/protos/Can.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/factory/containers/protos/CardboardBox.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/kitchen/breakfast/protos/CerealBox.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/computers/protos/DesktopComputer.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/robots/gctronic/e-puck/protos/E-puck.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/kitchen/breakfast/protos/HoneyJar.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/mirror/protos/Mirror.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/appearances/protos/Parquetry.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/plants/protos/PottedTree.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/factory/containers/protos/WoodenBox.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/chairs/protos/WoodenChair.proto"
+
+WorldInfo {
+  coordinateSystem "NUE"
+}
+Viewpoint {
+  orientation 0.7072437111202122 -0.7067595276684362 -0.01724248041318462 3.2043341707966864
+  position -0.5107062575037769 2.3201478192783416 0.9518350679322268
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  translation 0 0 0.16
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931957
+  floorSize 2 2
+  floorTileSize 1 1
+  floorAppearance Parquetry {
+    type "light strip"
+  }
+}
+Mirror {
+  translation 0.080001 0.05 -0.83
+  rotation 2.6394699999861357e-06 1.8811699999901186e-06 -0.9999999999947473 -1.5707953071795862
+  width 0.07
+  height 0.1
+}
+Book {
+  translation -0.8869721412999824 0.09988211080682595 0.06245902663682161
+  rotation 0.5761856803244688 0.5784108608559971 -0.5774521086920139 2.097589215153795
+}
+Book {
+  translation -0.8806934209672395 0.09988203320369221 0.006178209595649288
+  rotation 0.7743972825261496 0.44775694789700327 -0.44701517247860306 1.824243017591956
+  name "book(1)"
+}
+Book {
+  translation -0.8371172579202225 0.09988243400463623 -0.06056935415357953
+  rotation -0.37985662898969247 -0.6538564608855637 0.6543551558372506 -2.4141447292301454
+  name "book(2)"
+}
+Book {
+  translation -0.8574153042428913 0.0998822800000001 -0.12963956951373504
+  rotation 0.6775610833919272 0.5200533522018477 -0.5200533522018476 1.9505786199269948
+  name "book(3)"
+}
+Book {
+  translation -0.87608921852726 0.09988222934373917 -0.18555136838101546
+  rotation 0.4869654776209011 0.6176997100309976 -0.6175044063268451 2.2356629397795027
+  name "book(4)"
+}
+Book {
+  translation -0.875863792761009 0.0998823160235003 -0.24163222449615082
+  rotation 0.677430198078677 0.5200168483788753 -0.5202603234277877 1.9504964831608909
+  name "book(5)"
+}
+Book {
+  translation -0.7900074799797197 0.09988228000000016 -0.34999954682861373
+  rotation -0.2810704193956175 0.6786012891753049 0.678601289175305 2.59359060048086
+  name "book(6)"
+}
+WoodenBox {
+  translation -0.77 0.2 -0.63
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931957
+  size 0.4 0.4 0.4
+}
+WoodenBox {
+  translation -0.79 0.2 0.71
+  rotation -0.5773489348099857 0.5773509363782894 0.5773509363782895 2.0943971039638125
+  name "wooden box(1)"
+  size 0.2 0.2 0.4
+}
+WoodenBox {
+  translation -0.59 0.11 0.24
+  rotation 1.73184e-06 -1 -2.39745e-09 3.14159
+  name "wooden box(2)"
+  size 0.8 0.2 0.1
+}
+PottedTree {
+  translation 0.16 0 0.99
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931957
+}
+CerealBox {
+  translation 0.88 -0.0003923999999999872 -2.4516100135992825e-08
+  rotation -0.5773504372021828 0.5773501851833289 0.5773501851833289 2.094394850374378
+}
+BiscuitBox {
+  translation 0.7274123437806203 0.03984303999999992 0.5339104854194642
+  rotation -0.250091290625018 -0.2500912906250184 0.935365539619151 1.637564537352074
+}
+BiscuitBox {
+  translation 0.6141850709778879 0.03984303999999988 0.6344717699213653
+  rotation -0.12942785089652947 -0.12942785089652978 0.9831057231165994 1.587834115555369
+  name "biscuit box(1)"
+}
+BiscuitBox {
+  translation 0.8706200000000003 -0.00015696000000007052 0.3850000000000004
+  rotation -0.7745961579182169 -0.4472140383185307 -0.44721403831853085 1.8234772210912162
+  name "biscuit box(3)"
+}
+BiscuitBox {
+  translation 0.8739381386258768 -0.0001563539368516463 0.6549992742451205
+  rotation -0.47703140922670556 0.6215047842679563 0.6214280632086263 2.2518293945290906
+  name "biscuit box(2)"
+}
+HoneyJar {
+  translation 0.85 -0.0006961999999999732 0.11000000000000001
+  rotation -0.5773502691896258 0.5773502691896257 0.5773502691896258 2.0943951023931953
+}
+CardboardBox {
+  translation 0.84 0.15 -0.65
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931957
+  size 0.3 0.1 0.3
+}
+DesktopComputer {
+  translation -0.37 6.66135e-18 0.98
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931957
+}
+WoodenChair {
+  translation -0.0773649 0.2 -0.150358
+  rotation 5.409726460698652e-07 0.9999999999997072 -5.409726461181576e-07 2.094395897974132
+}
+Can {
+  translation 0.42 0.06096266000000018 -0.34
+  rotation -0.577350269189626 0.5773502691896257 0.5773502691896258 2.0943951023931953
+}
+Can {
+  translation 0.36 0.060962660000000196 -0.45
+  rotation -0.5773502691896261 0.5773502691896257 0.5773502691896257 2.0943951023931953
+  name "can(1)"
+}
+Ball {
+  translation 0.96 0.032413671999999796 0.93
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931953
+}
+Ball {
+  translation 0.96 0.032413671999999775 1.01
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931953
+  name "ball(1)"
+}
+Ball {
+  translation 0.9 0.03241367199999979 0.96
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931953
+  name "ball(2)"
+}
+Ball {
+  translation 0.81 0.032413671999999796 0.93
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931953
+  name "ball(3)"
+}
+Ball {
+  translation 0.86 0.03241367199999975 1.11
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931953
+  name "ball(4)"
+}
+E-puck {
+  hidden position_0_0 167.2930077414683
+  hidden position_0_1 176.19204235620876
+  hidden linearVelocity_0 0.003183698488635483 2.3906157290313455e-06 -0.08748297066441932
+  hidden angularVelocity_0 -2.856526353763801e-06 -0.4384346838626036 -6.129624274021667e-05
+  hidden rotation_1 0 1 0 3.930189754799053
+  hidden linearVelocity_1 0.003604975565567572 -4.562733775514996e-06 -0.09888607932665176
+  hidden angularVelocity_1 -4.996741113787885 -0.46346984793806706 -0.1809595464441981
+  hidden rotation_2 0 1 0 0.2628537551803382
+  hidden linearVelocity_2 0.002753625773906945 7.544192570207071e-07 -0.07608387687423884
+  hidden angularVelocity_2 -3.7474522310019593 -0.4561516102309322 -0.13905464503269882
+  translation -0.5157820588958713 -7.471048652314509e-05 0.7970581234038627
+  rotation 0.5953437965970557 -0.5676883266284479 -0.5685910020948242 -2.0690080934477884
+  controller "Lab2Controller"
+  supervisor TRUE
+  turretSlot [
+    Compass {
+    }
+  ]
+}
