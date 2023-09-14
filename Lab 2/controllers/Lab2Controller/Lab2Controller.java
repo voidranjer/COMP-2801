@@ -1,4 +1,5 @@
-// Author: Mark Lanthier (SN:100000001)
+// Author: James Yap (SN:101276054)
+// Partner: amirajumokeabdurrah@cmail.carleton.ca (SN:101222107)
 
 import com.cyberbotics.webots.controller.DistanceSensor;
 import com.cyberbotics.webots.controller.Motor;
@@ -79,7 +80,10 @@ public class Lab2Controller {
         case STRAIGHT:
           System.out.println("STRAIGHT");
 
-          if (frontCollide)
+          if (rightSideDetach && !rightAngledCollide && !rightAheadCollide && !leftAheadCollide)
+            currentMode = PIVOT_RIGHT;
+
+          else if (frontCollide)
             currentMode = SPIN_LEFT;
 
           else if (rightSideCollide)
@@ -96,6 +100,10 @@ public class Lab2Controller {
           break;
         case PIVOT_RIGHT:
           System.out.println("PIVOT RIGHT");
+          if (frontCollide)
+            currentMode = SPIN_LEFT;
+          else if (rightSideCollide || rightAngledCollide || rightAheadCollide)
+            currentMode = CURVE_LEFT;
           break;
         case SPIN_LEFT:
           System.out.println("SPIN LEFT");
