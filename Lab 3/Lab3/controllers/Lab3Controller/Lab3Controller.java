@@ -23,6 +23,10 @@ public class Lab3Controller {
   static final byte NONE = 2;
   static final byte FULL_SPEED = 6;
 
+  public static boolean isRed(int red, int green, int blue) {
+    return (red > 60) && (green < 100) && (blue < 100);
+  }
+
   public static void main(String[] args) {
     Robot robot = new Robot();
     int timeStep = (int) Math.round(robot.getBasicTimeStep());
@@ -59,7 +63,8 @@ public class Lab3Controller {
     double accelTemp[] = new double[3];
 
     // Thresh
-    double ACCEL_THRESH = 2.5;
+    final double ACCEL_THRESH = 1.5;
+    final double CAM_THRESH = 20;
 
     while (robot.step(timeStep) != -1) {
       // SENSE: Read the sensors
@@ -80,23 +85,63 @@ public class Lab3Controller {
       boolean tippedSideways = Math.abs(accelTemp[1]) > ACCEL_THRESH;
       boolean flat = Math.abs(accelTemp[0]) < ACCEL_THRESH && Math.abs(accelTemp[1]) < ACCEL_THRESH;
 
+      int[] image = camera.getImage();
+
+      int leftCount = 0;
+      int rightCount = 0;
+      int centerCount = 0;
+      int r, g, b = 0;
+
+      int Y_SCAN_OFFSET = 10;
+      for (int yLvl = CAMERA_HEIGHT / 2 - Y_SCAN_OFFSET; yLvl < CAMERA_HEIGHT / 2 + Y_SCAN_OFFSET; yLvl++)
+        for (int x = 0; x < CAMERA_WIDTH; x++) {
+          r = Camera.imageGetRed(image, CAMERA_WIDTH, x, yLvl);
+          g = Camera.imageGetGreen(image, CAMERA_WIDTH, x, yLvl);
+          b = Camera.imageGetBlue(image, CAMERA_WIDTH, x, yLvl);
+          if (isRed(r, g, b)) {
+            if (x < CAMERA_WIDTH / 3)
+              leftCount++;
+            else if (x > CAMERA_WIDTH * 2 / 3)
+              rightCount++;
+            else
+              centerCount++;
+          }
+        }
+
+      boolean detectedLeft = leftCount > (rightCount + CAM_THRESH);
+      boolean detectedRight = rightCount > (leftCount + CAM_THRESH);
+      boolean detectedCenter = centerCount > 350;
+      // boolean detectedCenter = centerCount > (leftCount + CAM_THRESH) &&
+      // centerCount > (rightCount + CAM_THRESH);
+      boolean notDetected = !detectedLeft && !detectedCenter && !detectedRight;
+
       // THINK: Make a decision as to what MODE to be in
       switch (currentMode) {
         case WANDER:
           if (!flat)
             currentMode = TURN_AROUND;
+          if (!notDetected)
+            currentMode = HOME_IN;
           break;
         case HOME_IN:
+          if (!flat)
+            currentMode = TURN_AROUND;
+          if (notDetected)
+            currentMode = WANDER;
           break;
         case PUSH_BALL:
           break;
         case TURN_AROUND:
           if (tippedBackward && !tippedForward && !tippedSideways)
             currentMode = GO_FORWARD;
+          if (flat)
+            currentMode = WANDER;
           break;
         case GO_FORWARD:
           if (!tippedBackward && !flat)
             currentMode = TURN_AROUND;
+          if (flat)
+            currentMode = WANDER;
           break;
         case AVOID:
           break;
@@ -124,6 +169,15 @@ public class Lab3Controller {
           break;
         case HOME_IN:
           turnCount = 0;
+          if (detectedLeft) {
+            leftSpeed = (int) (FULL_SPEED * 0.5);
+            rightSpeed = FULL_SPEED;
+          } else if (detectedRight) {
+            rightSpeed = (int) (FULL_SPEED * 0.5);
+            leftSpeed = FULL_SPEED;
+          } else if (detectedCenter) {
+            leftSpeed = rightSpeed = FULL_SPEED;
+          }
           break;
         case PUSH_BALL:
           turnCount = 0;
@@ -141,12 +195,15 @@ public class Lab3Controller {
           turnCount = 0;
       }
 
-      System.out.println("AccelTemp: " + accelTemp[0] + ", " + accelTemp[1] + ", "
-          + accelTemp[2]);
-      System.out.println("Tipped forward: " + tippedForward);
-      System.out.println("Tipped backward: " + tippedBackward);
-      System.out.println("Tipped sideways: " + tippedSideways);
-      System.out.println("Flat: " + flat);
+      System.out.println("Detected: " + detectedLeft + " " + detectedCenter + " " +
+          detectedRight);
+      System.out.println("Count: " + leftCount + " " + centerCount + " " +
+          rightCount);
+      System.out.println("Current mode: " + currentMode);
+
+      // System.out.println("Tipped: " + tippedForward + " " + tippedBackward + " " +
+      // tippedSideways + " FLAT: " + flat);
+
       // leftSpeed = rightSpeed = 0;
       leftMotor.setVelocity(leftSpeed);
       rightMotor.setVelocity(rightSpeed);
