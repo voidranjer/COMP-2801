@@ -1,0 +1,151 @@
+#VRML_SIM R2023a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/balls/protos/Ball.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/robots/gctronic/e-puck/protos/E-puck.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/appearances/protos/Parquetry.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/factory/containers/protos/WoodenBox.proto"
+
+WorldInfo {
+  coordinateSystem "NUE"
+}
+Viewpoint {
+  orientation -0.7071057814660382 0.7071077809056435 5.551115123136879e-17 3.1415966524690035
+  position -2.119093701520068e-17 6.097871746898524 2.373384945702476e-15
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+WoodenBox {
+  translation 0 -0.01 0
+  rotation -2.39745e-09 1 2.39745e-09 1.5708
+  size 2 0.2 2
+}
+WoodenBox {
+  translation -1.0708 -0.032541 0
+  rotation -0.6215148215403116 0.4769052874643238 0.6215148215403116 2.251589190188522
+  name "wooden box(3)"
+  size 2 0.2 0.2
+}
+WoodenBox {
+  translation 1.0708 -0.032491 0
+  rotation -0.5199889506421485 0.6776599312488192 0.5199889506421483 1.9504431335815573
+  name "wooden box(4)"
+  size 2 0.2 0.2
+}
+WoodenBox {
+  translation 1.0674 0.09458 1.04
+  rotation -0.5773510543593716 0.5773486988469305 0.5773510543593716 2.0943974579088396
+  name "wooden box(5)"
+  size 0.1 0.1 0.2
+}
+WoodenBox {
+  translation -1.0526 0.0945754 1.04
+  rotation -0.5773510543593716 0.5773486988469305 0.5773510543593716 2.0943974579088396
+  name "wooden box(6)"
+  size 0.1 0.1 0.2
+}
+WoodenBox {
+  translation -1.0526 0.0945754 -1.06
+  rotation -0.5773510543593716 0.5773486988469305 0.5773510543593716 2.0943974579088396
+  name "wooden box(7)"
+  size 0.1 0.1 0.2
+}
+WoodenBox {
+  translation 1.0474 0.0945817 -1.06
+  rotation -0.5773510543593716 0.5773486988469305 0.5773510543593716 2.0943974579088396
+  name "wooden box(8)"
+  size 0.1 0.1 0.2
+}
+WoodenBox {
+  translation 0 -0.0324405 -1.0703
+  rotation -0.6215141913711872 0.6215141913711871 0.47690692996478745 2.251586513884641
+  name "wooden box(1)"
+  size 0.2 2 0.2
+}
+WoodenBox {
+  translation 0 -0.0325 1.0708
+  rotation -0.5199868016446664 0.5199868016446663 0.6776632292154421 1.9504386134203324
+  name "wooden box(2)"
+  size 0.2 2 0.2
+}
+Ball {
+  translation -0.0010789764917952531 0.12241367188605567 -0.3156385241330127
+  rotation 0.5702117519421397 -0.5678326770174439 -0.5936536101619183 -2.0665594073557116
+  color 1 0 0
+}
+Ball {
+  translation 0.4289499360492923 0.12241367393805525 -0.3348871075539817
+  rotation 0.5703047367960113 -0.5679256268333437 -0.5934753487500435 -2.0668228711010483
+  name "ball(1)"
+  color 1 0 0
+}
+Ball {
+  translation 0.6597149360493476 0.12241367504455686 -0.8444401075721335
+  rotation 0.5703047367823587 -0.5679256268198584 -0.593475348776068 -2.06682287106137
+  name "ball(8)"
+  color 1 0 0
+}
+Ball {
+  translation 0.8785149360493684 0.12241367609367587 -0.04427890758931426
+  rotation 0.5703047367684209 -0.5679256268068599 -0.5934753488019004 -2.06682287102561
+  name "ball(9)"
+  color 1 0 0
+}
+Ball {
+  translation -0.49116906395084853 0.12241366952616785 -0.2562721074816334
+  rotation 0.5703047368512051 -0.5679256268878421 -0.5934753486448526 -2.0668228712565346
+  name "ball(2)"
+  color 1 0 0
+}
+Ball {
+  translation -0.30172406395081314 0.12241367043453609 0.11393809250348574
+  rotation 0.5703047368397325 -0.5679256268766029 -0.5934753486666325 -2.0668228712240824
+  name "ball(6)"
+  color 1 0 0
+}
+Ball {
+  translation -0.2616190639508103 0.12241367062683653 0.04401041250032674
+  rotation 0.570304736837305 -0.5679256268742565 -0.5934753486712108 -2.0668228712175933
+  name "ball(7)"
+  color 1 0 0
+}
+Ball {
+  translation -0.59199406395084 0.12241366904271633 0.29346889252630726
+  rotation 0.5703047368572347 -0.5679256268939956 -0.5934753486331695 -2.066822871272426
+  name "ball(5)"
+  color 1 0 0
+}
+Ball {
+  translation -0.002527453950772188 0.12241367186915293 0.5229078924799762
+  rotation 0.5703047368217206 -0.5679256268587082 -0.5934753487010657 -2.066822871173385
+  name "ball(3)"
+  color 1 0 0
+}
+Ball {
+  translation 0.27797893604924934 0.12241367321415754 0.29455389245791413
+  rotation 0.5703047368052376 -0.5679256268418108 -0.5934753487330748 -2.0668228711261314
+  name "ball(4)"
+  color 1 0 0
+}
+E-puck {
+  hidden position_0_0 0.20096000099758174
+  hidden position_0_1 0.2009600006581223
+  hidden rotation_1 0 1 0 0.20096000099758135
+  hidden rotation_2 0 1 0 0.2009600006581228
+  translation 4.702349494379048e-05 0.0899360562890872 0.0307244208300238
+  rotation -0.5770497223943519 0.5771047023422572 0.5778959944653157 2.0936590321054425
+  controller "Lab3Controller"
+}
+RectangleArena {
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931957
+  floorSize 2.55 2.55
+  floorAppearance Parquetry {
+    type "chequered"
+    colorOverride 0 0 0
+  }
+  wallHeight 0.3
+}
