@@ -1,4 +1,6 @@
-// Author: Mark Lanthier (SN:100000001)
+// James Yap : 101276054
+// Terry Kong: 101187885
+// Room 10
 
 import com.cyberbotics.webots.controller.Camera;
 import com.cyberbotics.webots.controller.Accelerometer;
@@ -64,7 +66,8 @@ public class Lab3Controller {
 
     // Thresh
     final double ACCEL_THRESH = 1.5;
-    final double CAM_THRESH = 20;
+    final double CAM_THRESH = 10;
+    final double PROXIMITY_THRESH = 100;
 
     while (robot.step(timeStep) != -1) {
       // SENSE: Read the sensors
@@ -92,7 +95,7 @@ public class Lab3Controller {
       int centerCount = 0;
       int r, g, b = 0;
 
-      int Y_SCAN_OFFSET = 10;
+      int Y_SCAN_OFFSET = 15;
       for (int yLvl = CAMERA_HEIGHT / 2 - Y_SCAN_OFFSET; yLvl < CAMERA_HEIGHT / 2 + Y_SCAN_OFFSET; yLvl++)
         for (int x = 0; x < CAMERA_WIDTH; x++) {
           r = Camera.imageGetRed(image, CAMERA_WIDTH, x, yLvl);
@@ -115,13 +118,18 @@ public class Lab3Controller {
       // centerCount > (rightCount + CAM_THRESH);
       boolean notDetected = !detectedLeft && !detectedCenter && !detectedRight;
 
+      boolean proximityDetected = leftAheadSensor.getValue() > PROXIMITY_THRESH ||
+          rightAheadSensor.getValue() > PROXIMITY_THRESH;
+
       // THINK: Make a decision as to what MODE to be in
       switch (currentMode) {
         case WANDER:
-          if (!flat)
-            currentMode = TURN_AROUND;
           if (!notDetected)
             currentMode = HOME_IN;
+          if (!flat)
+            currentMode = TURN_AROUND;
+          if (proximityDetected && notDetected)
+            currentMode = AVOID;
           break;
         case HOME_IN:
           if (!flat)
@@ -130,6 +138,8 @@ public class Lab3Controller {
             currentMode = WANDER;
           break;
         case PUSH_BALL:
+          if (!flat || !proximityDetected)
+            currentMode = WANDER;
           break;
         case TURN_AROUND:
           if (tippedBackward && !tippedForward && !tippedSideways)
@@ -144,6 +154,8 @@ public class Lab3Controller {
             currentMode = WANDER;
           break;
         case AVOID:
+          if (!proximityDetected)
+            currentMode = WANDER;
           break;
       }
 
@@ -181,6 +193,7 @@ public class Lab3Controller {
           break;
         case PUSH_BALL:
           turnCount = 0;
+          leftSpeed = rightSpeed = FULL_SPEED;
           break;
         case TURN_AROUND:
           turnCount = 0;
@@ -193,12 +206,15 @@ public class Lab3Controller {
           break;
         case AVOID:
           turnCount = 0;
+          leftSpeed = -FULL_SPEED;
+          rightSpeed = FULL_SPEED;
+          break;
       }
 
-      System.out.println("Detected: " + detectedLeft + " " + detectedCenter + " " +
-          detectedRight);
-      System.out.println("Count: " + leftCount + " " + centerCount + " " +
-          rightCount);
+      // System.out.println("Detected: " + detectedLeft + " " + detectedCenter + " " +
+      // detectedRight);
+      // System.out.println("Count: " + leftCount + " " + centerCount + " " +
+      // rightCount);
       System.out.println("Current mode: " + currentMode);
 
       // System.out.println("Tipped: " + tippedForward + " " + tippedBackward + " " +
