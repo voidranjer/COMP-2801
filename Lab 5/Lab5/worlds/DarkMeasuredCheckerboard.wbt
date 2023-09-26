@@ -1,0 +1,154 @@
+#VRML_SIM R2023a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/robots/gctronic/e-puck/protos/E-puck.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/appearances/protos/Parquetry.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+
+WorldInfo {
+  coordinateSystem "NUE"
+}
+Viewpoint {
+  orientation 0.7071067811865476 -0.7071067811865475 0 3.141592653589793
+  position -0.13353629168337472 1.5105211135822265 -0.34463049378908817
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  translation -1.10113e-13 -8.68185e-06 0
+  rotation -0.5773517061776722 0.5773480545307319 0.5773510468539135 2.094397435397405
+  floorSize 2 2
+  floorTileSize 0.2 0.2
+  floorAppearance Parquetry {
+    type "chequered"
+    colorOverride 0.2 0.2 0.2
+  }
+  wallHeight 0.05
+}
+SpotLight {
+  attenuation 0 0 10
+  beamWidth 0
+  color 1 0 0
+  cutOffAngle 0
+  direction 0 0 0
+  intensity 3
+  location 0.3 0.001 -0.3
+  radius 1
+}
+SpotLight {
+  attenuation 0 0 10
+  beamWidth 0
+  color 1 0 0
+  cutOffAngle 0
+  direction 0 0 0
+  intensity 3
+  location 0.3 0.001 -0.6
+  radius 1
+}
+SpotLight {
+  attenuation 0 0 10
+  beamWidth 0
+  color 1 0 0
+  cutOffAngle 0
+  direction 0 0 0
+  intensity 3
+  location -0.1 0.001 -0.7
+  radius 1
+}
+SpotLight {
+  attenuation 0 0 10
+  beamWidth 0
+  color 1 0 0
+  cutOffAngle 0
+  direction 0 0 0
+  intensity 3
+  location 0.1 0.001 -0.5
+  radius 1
+}
+SpotLight {
+  attenuation 0 0 10
+  beamWidth 0
+  color 1 0 0
+  cutOffAngle 0
+  direction 0 0 0
+  intensity 3
+  location -0.1 0.001 -0.5
+  radius 1
+}
+SpotLight {
+  attenuation 0 0 10
+  beamWidth 0
+  color 1 0 0
+  cutOffAngle 0
+  direction 0 0 0
+  intensity 3
+  location -0.6 0.001 -0.4
+  radius 1
+}
+SpotLight {
+  attenuation 0 0 10
+  beamWidth 0
+  color 1 0 0
+  cutOffAngle 0
+  direction 0 0 0
+  intensity 3
+  location -0.6 0.001 -0.4
+  radius 1
+}
+SpotLight {
+  attenuation 0 0 10
+  beamWidth 0
+  color 1 0 0
+  cutOffAngle 0
+  direction 0 0 0
+  intensity 3
+  location -0.5 0.001 -0.3
+  radius 1
+}
+SpotLight {
+  attenuation 0 0 10
+  beamWidth 0
+  color 1 0 0
+  cutOffAngle 0
+  direction 0 0 0
+  intensity 3
+  location -0.4 0.001 -0.3
+  radius 1
+}
+SpotLight {
+  attenuation 0 0 10
+  beamWidth 0
+  color 1 0 0
+  cutOffAngle 0
+  direction 0 0 0
+  intensity 3
+  location -0.3 0.001 -0.2
+  radius 1
+}
+SpotLight {
+  attenuation 0 0 10
+  beamWidth 0
+  color 1 0 0
+  cutOffAngle 0
+  direction 0 0 0
+  intensity 3
+  location -0.2 0.001 -0.2
+  radius 1
+}
+SpotLight {
+  attenuation 0 0 10
+  beamWidth 0
+  color 1 0 0
+  cutOffAngle 0
+  direction 0 0 0
+  intensity 3
+  location 0 0.001 0
+  radius 1
+}
+E-puck {
+  rotation -0.5772914061914252 0.5772967577601921 0.5774626272037846 2.0942469531670667
+  controller "Lab5Controller"
+}
