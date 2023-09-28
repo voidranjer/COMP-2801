@@ -1,6 +1,6 @@
 // Room 38
-// James Yap 101276054
-// Marco Wang 101183623
+// James Yap 101276054 (jamesyap@cmail.carleton.ca)
+// Marco Wang 101183623 (marcowang@cmail.carleton.ca)
 
 import com.cyberbotics.webots.controller.Camera;
 import com.cyberbotics.webots.controller.PositionSensor;
@@ -18,9 +18,12 @@ public class Lab6Controller {
   // ****************************
   // The FIXED beacon locations
   // ****************************
-  static final int x1 = -60, y1 = 30; // RED Beacon location
-  static final int x2 = 0, y2 = -70; // GREEN Beacon location
-  static final int x3 = 60, y3 = 0; // BLUE Beacon location
+  static final int xr = -60, yr = 30; // RED Beacon location
+  static final int xg = 0, yg = -70; // GREEN Beacon location
+  static final int xb = 60, yb = 0; // BLUE Beacon location
+  // static final int x1 = -60, y1 = 30; // RED Beacon location
+  // static final int x2 = 0, y2 = -70; // GREEN Beacon location
+  // static final int x3 = 60, y3 = 0; // BLUE Beacon location
 
   // *****************************************************************************************************
   // The locations to visit in sequence. These numbers do not match the numbers in
@@ -160,7 +163,7 @@ public class Lab6Controller {
     int leftPixels = -1;
     int rightPixels = -1;
 
-    double angles[] = new double[3];
+    double angles[] = { -1, -1, -1 };
 
     int r, g, b;
 
@@ -209,8 +212,6 @@ public class Lab6Controller {
         }
       }
 
-      System.out.println("R: " + angles[RED] + " G: " + angles[GREEN] + " B: " + angles[BLUE]);
-
       // CHECK IF THE PIXEL IS RED
       // IF IT IS ... REMEMBER THE FIRST RED, LAST RED and WHETHER THE CENTER OF THE
       // ROW IS RED
@@ -234,6 +235,15 @@ public class Lab6Controller {
 
       // DO NOT CHANGE THE NEXT SIX LINES OF CODE!!
     }
+
+    // Determine if we found all three beacons
+    boolean foundAll = true;
+    for (int i = 0; i < angles.length; i++) {
+      if (angles[i] == -1) {
+        foundAll = false;
+      }
+    }
+
     LeftMotor.setVelocity(0);
     RightMotor.setVelocity(0);
     Epuck.step(TimeStep);
@@ -243,10 +253,49 @@ public class Lab6Controller {
     // *************************************************************************************
     // WRITE CODE HERE TO CALCULATE AND DISPLAY THE ROBOT LOCATION
 
+    // STEP 1: compute the modified beacon coordinates
+    double xPrime1 = xr - xg;
+    double yPrime1 = yr - yg;
+    double xPrime3 = xb - xg;
+    double yPrime3 = yb - yg;
+
+    // STEP 2: compute the three cotangents
+    double t12 = 1.0 / Math.tan(angles[GREEN] - angles[RED]);
+    double t23 = 1.0 / Math.tan(angles[BLUE] - angles[GREEN]);
+    double t31 = (1.0 - t12 * t23) / t12 + t23;
+
+    // STEP 3: compute the modified circle center coordinates
+    double xPrime12 = xPrime1 + t12 * yPrime1;
+    double yPrime12 = yPrime1 - t12 * xPrime1;
+    double xPrime23 = xPrime3 - t23 * yPrime3;
+    double yPrime23 = yPrime3 + t23 * xPrime3;
+    double xPrime31 = (xPrime3 + xPrime1) + t31 * (yPrime3 - yPrime1);
+    double yPrime31 = (yPrime3 + yPrime1) - t31 * (xPrime3 - xPrime1);
+
+    // STEP 4: compute k'31
+    double kPrime31 = xPrime1 * xPrime3 + yPrime1 * yPrime3 + t31 * (xPrime1 * yPrime3 - xPrime3 * yPrime1);
+
+    // STEP 5: compute d
+    double d = (xPrime12 - xPrime23) * (yPrime23 - yPrime31) - (yPrime12 - yPrime23) * (xPrime23 - xPrime31);
+
+    // STEP 6: compute the robot position (x, y)
+    double x = xg + kPrime31 * (yPrime12 - yPrime23) / d;
+    double y = yg + kPrime31 * (xPrime23 - xPrime12) / d;
+
+    System.out.println("d: " + d);
+
+    boolean noSolution = !foundAll || d == 0;
+    boolean isInaccurate = Math.abs(d) < 100;
+
     // USE pointNumber PARAMETER WHEN PRINTING THE COORDINATE NUMBER
 
     // IF THERE WERE THREE ANGLES FOUND, THEN COMPUTE AND DISPLAY THE LOCATION
     // OTHERWISE INDICATE THAT THE LOCATION CANNOT BE COMPUTED
+    System.out.println("R: " + angles[RED] + " G: " + angles[GREEN] + " B: " +
+        angles[BLUE]);
+
+    System.out.printf("(x%d, y%d) = (%.2f, %.2f) %s\n", pointNumber, pointNumber, x, y,
+        noSolution ? "No solution" : isInaccurate ? "Inaccurate" : "");
 
     // *************************************************************************************
   }
@@ -279,11 +328,11 @@ public class Lab6Controller {
 
     // Travel through the points in the array one at a time in sequence and
     // determine the location at each point by using triangulation
-    for (byte i = 0; i < x.length - 1; i++) {
-      calculatePosition(startAngle, i);
-      makeTurn(x[i], y[i], x[i + 1], y[i + 1]);
-      moveAhead(x[i], y[i], x[i + 1], y[i + 1]);
-    }
+    // for (byte i = 0; i < x.length - 1; i++) {
+    // calculatePosition(startAngle, i);
+    // makeTurn(x[i], y[i], x[i + 1], y[i + 1]);
+    // moveAhead(x[i], y[i], x[i + 1], y[i + 1]);
+    // }
     calculatePosition(startAngle, (byte) (x.length - 1)); // Get the last one
   }
 }
