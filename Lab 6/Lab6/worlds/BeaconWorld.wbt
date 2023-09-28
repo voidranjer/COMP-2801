@@ -1,0 +1,55 @@
+#VRML_SIM R2023a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/drinks/protos/Can.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/robots/gctronic/e-puck/protos/E-puck.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/appearances/protos/Parquetry.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+
+WorldInfo {
+  coordinateSystem "NUE"
+}
+Viewpoint {
+  orientation -0.7071057814660382 0.7071077809056435 5.551115123136879e-17 3.1415966524690035
+  position -0.0009036726244405787 3.4400250799134753 0.00035488749821894084
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931957
+  floorSize 2 2
+  floorTileSize 0.2 0.2
+  floorAppearance Parquetry {
+    type "chequered"
+    colorOverride 0.2 0.2 0.2
+  }
+  wallHeight 0.02
+}
+E-puck {
+  rotation -0.577349935856137 0.577349935856137 0.5773509358560258 2.09439
+  name "e-puck(1)"
+  controller "Lab6Controller"
+}
+Can {
+  translation -3.243039551168889e-06 0.060959940209026606 0.7
+  rotation 3.175046378515647e-06 0.7071067811829835 0.7071067811829834 -3.141586303497008
+  color 0 1 0
+  textureUrl []
+}
+Can {
+  translation 0.6000000000004487 0.06095994020902674 4.041059999973604e-06
+  rotation 3.1750463785431035e-06 0.7071067811829835 0.7071067811829834 -3.141586303497008
+  name "can(1)"
+  color 0 0 1
+  textureUrl []
+}
+Can {
+  translation -0.5999999999995512 0.06095994020902647 -0.3
+  rotation 3.1750463785527178e-06 0.7071067811829835 0.7071067811829834 -3.141586303497008
+  name "can(2)"
+  color 1 0 0
+  textureUrl []
+}
