@@ -166,6 +166,8 @@ public class Lab6Controller {
     double angles[] = { -1, -1, -1 };
 
     int r, g, b;
+    int currentColor = NONE;
+    // boolean firstDetected = false;
 
     // Do NOT alter the looping code!!! ... just insert inside it at the location
     // shown
@@ -189,12 +191,15 @@ public class Lab6Controller {
         g = Camera.imageGetGreen(image, CAMERA_WIDTH, x, SCAN_Y_LVL);
         b = Camera.imageGetBlue(image, CAMERA_WIDTH, x, SCAN_Y_LVL);
 
-        int currentColor = getColor(r, g, b);
+        currentColor = getColor(r, g, b);
 
         // Reset the left and right pixels if the color changes
         if (prevColor != currentColor || prevColor == NONE) {
           leftPixels = -1;
           rightPixels = -1;
+
+          // if (currentColor == NONE)
+          // firstDetected = false;
         }
         prevColor = currentColor;
 
@@ -207,8 +212,11 @@ public class Lab6Controller {
 
         if (currentColor != NONE && Math.abs(leftPixels - rightPixels) <= PIXEL_THRESH
             && getColor(centerR, centerG, centerB) == currentColor) {
+          // if (!firstDetected) {
           double deltaTheta = (2.0 * WHEEL_RADIUS / WHEEL_BASE) * reading;
-          angles[prevColor] = (startAngle + Math.toDegrees(deltaTheta)) % 360;
+          angles[prevColor] = (angle + Math.toDegrees(deltaTheta)) % 360;
+          // firstDetected = true;
+          // }
         }
       }
 
@@ -260,9 +268,9 @@ public class Lab6Controller {
     double yPrime3 = yb - yg;
 
     // STEP 2: compute the three cotangents
-    double t12 = 1.0 / Math.tan(angles[GREEN] - angles[RED]);
-    double t23 = 1.0 / Math.tan(angles[BLUE] - angles[GREEN]);
-    double t31 = (1.0 - t12 * t23) / t12 + t23;
+    double t12 = 1.0 / Math.tan(Math.toRadians(angles[GREEN] - angles[RED]));
+    double t23 = 1.0 / Math.tan(Math.toRadians(angles[BLUE] - angles[GREEN]));
+    double t31 = (1.0 - t12 * t23) / (t12 + t23);
 
     // STEP 3: compute the modified circle center coordinates
     double xPrime12 = xPrime1 + t12 * yPrime1;
@@ -282,8 +290,6 @@ public class Lab6Controller {
     double x = xg + kPrime31 * (yPrime12 - yPrime23) / d;
     double y = yg + kPrime31 * (xPrime23 - xPrime12) / d;
 
-    System.out.println("d: " + d);
-
     boolean noSolution = !foundAll || d == 0;
     boolean isInaccurate = Math.abs(d) < 100;
 
@@ -291,11 +297,18 @@ public class Lab6Controller {
 
     // IF THERE WERE THREE ANGLES FOUND, THEN COMPUTE AND DISPLAY THE LOCATION
     // OTHERWISE INDICATE THAT THE LOCATION CANNOT BE COMPUTED
-    System.out.println("R: " + angles[RED] + " G: " + angles[GREEN] + " B: " +
-        angles[BLUE]);
 
-    System.out.printf("(x%d, y%d) = (%.2f, %.2f) %s\n", pointNumber, pointNumber, x, y,
-        noSolution ? "No solution" : isInaccurate ? "Inaccurate" : "");
+    // System.out.println("R: " + angles[RED] + " G: " + angles[GREEN] + " B: " +
+    // angles[BLUE]);
+
+    // System.out.println("d: " + d);
+
+    if (noSolution) {
+      System.out.printf("(x%d, y%d) = CANNOT COMPUTE LOCATION\n", pointNumber, pointNumber);
+    } else {
+      System.out.printf("(x%d, y%d) = (%d, %d) %s\n", pointNumber, pointNumber, Math.round(x), Math.round(y),
+          isInaccurate ? " INACCURATE" : "");
+    }
 
     // *************************************************************************************
   }
@@ -328,11 +341,11 @@ public class Lab6Controller {
 
     // Travel through the points in the array one at a time in sequence and
     // determine the location at each point by using triangulation
-    // for (byte i = 0; i < x.length - 1; i++) {
-    // calculatePosition(startAngle, i);
-    // makeTurn(x[i], y[i], x[i + 1], y[i + 1]);
-    // moveAhead(x[i], y[i], x[i + 1], y[i + 1]);
-    // }
+    for (byte i = 0; i < x.length - 1; i++) {
+      calculatePosition(startAngle, i);
+      makeTurn(x[i], y[i], x[i + 1], y[i + 1]);
+      moveAhead(x[i], y[i], x[i + 1], y[i + 1]);
+    }
     calculatePosition(startAngle, (byte) (x.length - 1)); // Get the last one
   }
 }
