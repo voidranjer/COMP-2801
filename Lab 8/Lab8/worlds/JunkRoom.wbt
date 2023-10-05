@@ -1,0 +1,124 @@
+#VRML_SIM R2023a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/kitchen/breakfast/protos/BiscuitBox.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/drinks/protos/Can.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/factory/containers/protos/CardboardBox.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/kitchen/breakfast/protos/CerealBox.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/computers/protos/DesktopComputer.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/robots/gctronic/e-puck/protos/E-puck.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/mirror/protos/Mirror.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/appearances/protos/Parquetry.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/factory/containers/protos/WoodenBox.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/chairs/protos/WoodenChair.proto"
+
+WorldInfo {
+  coordinateSystem "NUE"
+}
+Viewpoint {
+  orientation -0.7071057814660382 0.7071077809056435 5.551115123136879e-17 3.1415966524690035
+  position -1.1401928509040521e-05 4.0519449255043245 0.15970274467179027
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  translation 0 0 0.16
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931957
+  floorSize 2 2
+  floorTileSize 1 1
+  floorAppearance Parquetry {
+    type "light strip"
+  }
+}
+Mirror {
+  translation 0.080001 0.05 -0.83
+  rotation -0.7071067811853116 0.7071067811853116 -1.8697794213954488e-06 3.14159
+  width 0.05
+  height 0.1
+}
+WoodenBox {
+  translation -0.77 0.2 -0.63
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931957
+  size 0.4 0.4 0.4
+}
+WoodenBox {
+  translation -0.79 0.11 0.71
+  rotation -0.5773489348099857 0.5773509363782894 0.5773509363782895 2.0943971039638125
+  name "wooden box(1)"
+  size 0.4 0.2 0.2
+}
+WoodenBox {
+  translation -0.59 0.11 0.24
+  rotation -0.5773489348099857 0.5773509363782894 0.5773509363782895 2.0943971039638125
+  name "wooden box(2)"
+  size 0.1 0.8 0.2
+}
+CerealBox {
+  translation 0.9400000075421648 -0.00039239999999995945 1.6744930226738471e-09
+  rotation -0.577350437202183 0.5773501851833288 0.5773501851833288 2.094394850374378
+  size 0.2 0.08 0.3
+}
+BiscuitBox {
+  translation 0.601642 0.039843 0.311452
+  rotation -0.2500912906250184 -0.250091290625018 0.9353655396191509 1.6375645373520742
+}
+BiscuitBox {
+  translation 0.757684 0.0398432 0.513204
+  rotation 0.5199876256381047 -0.5199876256381047 -0.677661964674492 1.950435226391043
+  name "biscuit box(1)"
+}
+BiscuitBox {
+  translation 0.631211 -0.00015696 0.275467
+  rotation -0.37796500765110475 -0.6546535163700339 -0.6546535163700338 2.4188574701532577
+  name "biscuit box(3)"
+}
+BiscuitBox {
+  translation 0.873475 -0.00015696 0.336809
+  rotation -0.5773492478224381 -0.5773507798725421 -0.577350779872542 2.0943966344446547
+  name "biscuit box(4)"
+}
+BiscuitBox {
+  translation 0.874023975201519 -0.0001560950345976357 0.6549998018215863
+  rotation -0.47706269233187965 0.6215091962062638 0.6213996351914784 2.2519690813962003
+  name "biscuit box(2)"
+}
+CardboardBox {
+  translation 0.84 0.05 -0.55
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931957
+  size 0.3 0.3 0.1
+}
+DesktopComputer {
+  translation -0.37 0 0.95
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931957
+}
+WoodenChair {
+  translation -0.0773649 0.2 -0.150358
+  rotation 0.86602555283812 -4.643437602416833e-07 0.499999741831146 3.14159
+}
+Can {
+  translation 0.42 0.060962659999999995 -0.34
+  rotation -0.5773502691896255 0.5773502691896254 0.5773502691896263 2.094395102393195
+}
+Can {
+  translation 0.36 0.060962659999999995 -0.45
+  rotation -0.5773502691896255 0.5773502691896254 0.5773502691896263 2.094395102393195
+  name "can(1)"
+}
+E-puck {
+  translation -0.0949605 -0.00230197 -0.779334
+  rotation -0.0031136199506979403 0.707103353609217 0.707103353609217 3.135365433811865
+  controller "Lab8Controller"
+  supervisor TRUE
+  turretSlot [
+    Compass {
+    }
+    Display {
+      width 200
+      height 200
+    }
+  ]
+}
