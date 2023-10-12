@@ -1,0 +1,101 @@
+#VRML_SIM R2023a utf8
+
+EXTERNPROTO "../protos/Khepera3.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/appearances/protos/Parquetry.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/factory/containers/protos/WoodenBox.proto"
+
+WorldInfo {
+  coordinateSystem "NUE"
+}
+Viewpoint {
+  orientation -0.7071057814660382 0.7071077809056435 5.551115123136879e-17 3.1415966524690035
+  position 4.072843279887583e-07 2.760268763706861 -0.00041245794885236747
+  follow "wooden box(1)"
+  followType "None"
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+WoodenBox {
+  translation -0.232304 0.05 -0.021211
+  rotation -0.5773520754570453 0.5773493660537968 0.5773493660537968 2.0943923929941852
+  size 0.4 0.1 0.1
+}
+WoodenBox {
+  translation 0.9877 0.05 -0.00120789
+  rotation -0.5773520754570453 0.5773493660537968 0.5773493660537968 2.0943923929941852
+  name "wooden box(6)"
+  size 1.5 0.02 0.1
+}
+WoodenBox {
+  translation -0.9923 0.05 -0.00121727
+  rotation -0.5773520754570453 0.5773493660537968 0.5773493660537968 2.0943923929941852
+  name "wooden box(7)"
+  size 1.5 0.02 0.1
+}
+WoodenBox {
+  translation -0.0022968 0.05 -0.741212
+  rotation -0.5773520754570453 0.5773493660537968 0.5773493660537968 2.0943923929941852
+  name "wooden box(8)"
+  size 0.02 1.96 0.1
+}
+WoodenBox {
+  translation -0.00230398 0.05 0.738788
+  rotation -0.5773520754570453 0.5773493660537968 0.5773493660537968 2.0943923929941852
+  name "wooden box(9)"
+  size 0.02 1.96 0.1
+}
+WoodenBox {
+  translation -0.0454502 0.05 -0.370407
+  rotation -0.9999898760012481 -0.00318181512730387 -0.0031818151273038083 1.5708064508448965
+  name "wooden box(1)"
+  size 0.2 0.2 0.1
+}
+WoodenBox {
+  translation 0.175894 0.05 -0.366842
+  rotation -0.0022508383245162292 0.7071049899862244 0.7071049899862244 3.1370909845429966
+  name "wooden box(11)"
+  size 0.2 0.2 0.1
+}
+WoodenBox {
+  translation 0.443495 0.0500029 -0.016317
+  rotation 0.5773518262461821 -0.5773513965132635 0.577347584799991 2.0943997735833246
+  name "wooden box(2)"
+  size 0.5 0.3 0.1
+}
+WoodenBox {
+  translation -0.158803 0.05 0.386952
+  rotation -0.23306227940035523 0.6876343410275226 0.6876343410275227 2.6836429349120845
+  name "wooden box(3)"
+  size 0.25 0.3 0.1
+}
+WoodenBox {
+  translation 0.229429 0.05 0.416164
+  rotation -0.18615686149992688 -0.694746580745993 -0.6947465807459929 2.7734924285824656
+  name "wooden box(5)"
+  size 0.25 0.3 0.1
+}
+DEF floor RectangleArena {
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931957
+  floorSize 1.5 2
+  floorAppearance Parquetry {
+    type "light strip"
+  }
+}
+Khepera3 {
+  rotation -0.577349935856137 0.577349935856137 0.5773509358560258 2.09439
+  controller "Lab10Controller"
+  supervisor TRUE
+  turretSlot [
+    Compass {
+    }
+    Display {
+      width 400
+      height 300
+    }
+  ]
+}
