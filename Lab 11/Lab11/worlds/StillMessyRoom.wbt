@@ -1,0 +1,156 @@
+#VRML_SIM R2023a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/balls/protos/Ball.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/kitchen/breakfast/protos/BiscuitBox.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/drinks/protos/Can.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/factory/containers/protos/CardboardBox.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/kitchen/breakfast/protos/CerealBox.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/computers/protos/DesktopComputer.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/kitchen/breakfast/protos/HoneyJar.proto"
+EXTERNPROTO "../protos/Khepera3.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/mirror/protos/Mirror.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/appearances/protos/Parquetry.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/plants/protos/PottedTree.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/factory/containers/protos/WoodenBox.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/chairs/protos/WoodenChair.proto"
+
+WorldInfo {
+  coordinateSystem "NUE"
+}
+Viewpoint {
+  orientation -0.7071057814660382 0.7071077809056435 5.551115123136879e-17 3.1415966524690035
+  position -1.976425408497901e-07 3.7087764982821336 0.15969154035414
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+DEF floor RectangleArena {
+  translation 0 0 0.16
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931957
+  floorSize 2 2
+  floorTileSize 1 1
+  floorAppearance Parquetry {
+    type "light strip"
+  }
+}
+Mirror {
+  translation 0.280001 0.04 -0.83
+  rotation 2.6394699999861357e-06 1.8811699999901186e-06 -0.9999999999947473 -1.5707953071795862
+  width 0.05
+  height 0.5
+}
+WoodenBox {
+  translation -0.77 0.2 -0.63
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931957
+  size 0.4 0.4 0.4
+}
+WoodenBox {
+  translation -0.714378 0.11 0.25902
+  rotation 0.7745950284760504 -0.44721501644074235 -0.44721501644074235 -1.823475307179586
+  name "wooden box(1)"
+  size 0.4 0.2 0.2
+}
+PottedTree {
+  translation 0.16 0 0.99
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931957
+}
+CerealBox {
+  translation 0.9403335324417765 -0.00039236252206586997 0.0001333551831147928
+  rotation -0.5786325670527125 0.5767082933471516 0.5767078087997456 2.0924715054437626
+  size 0.2 0.08 0.3
+}
+BiscuitBox {
+  translation 0.7274123437806203 0.03984304000000016 0.5339104854194642
+  rotation 0.6545373418561068 0.6545373418561068 -0.378367197616131 -2.4181553071795863
+}
+BiscuitBox {
+  translation 0.65196 0.0398429 0.669798
+  rotation 0.3575689233361584 0.3575689233361584 0.8627218150298746 1.71793
+  name "biscuit box(1)"
+}
+BiscuitBox {
+  translation -0.130592 -0.000157045 -0.0918948
+  rotation -0.8628559982596194 -0.35740699927911007 -0.35740699927911007 1.71777
+  name "biscuit box(3)"
+}
+BiscuitBox {
+  translation 0.201747 -0.000157335 0.240444
+  rotation -0.8628559982596194 -0.35740699927911007 -0.35740699927911007 1.71777
+  name "biscuit box(4)"
+}
+BiscuitBox {
+  translation 0.8740154182301225 -0.00015612084453849387 0.6549997492215762
+  rotation 0.9831156837199381 -0.12926795841295324 -0.12951195833445556 -1.5882653071795865
+  name "biscuit box(2)"
+}
+HoneyJar {
+  translation 0.47 -0.0006962 0.21
+  rotation -0.5773502691896256 0.5773502691896256 0.577350269189626 2.0943951023931957
+}
+CardboardBox {
+  translation 0.84 0.05 -0.68
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931957
+  size 0.3 0.3 0.1
+}
+DesktopComputer {
+  translation -0.37 0 0.95
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931957
+}
+WoodenChair {
+  translation -0.0501142 0.2 0.167129
+  rotation -0.9238797538371682 6.33552831193228e-07 -0.3826828980361833 -3.1415853071795863
+}
+Can {
+  translation 0.42 0.06096266000000009 -0.34
+  rotation -0.5773502691896255 0.5773502691896256 0.5773502691896258 2.0943951023931953
+}
+Can {
+  translation 0.36 0.06096266000000008 -0.45
+  rotation -0.5773502691896257 0.5773502691896257 0.5773502691896258 2.0943951023931953
+  name "can(1)"
+}
+Ball {
+  translation 0.96 0.0324136720000002 0.93
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931953
+}
+Ball {
+  translation 0.96 0.0324136720000002 1.01
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931953
+  name "ball(1)"
+}
+Ball {
+  translation 0.9 0.03241367200000018 0.96
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931953
+  name "ball(2)"
+}
+Ball {
+  translation 0.81 0.03241367200000016 0.93
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931953
+  name "ball(3)"
+}
+Ball {
+  translation 0.86 0.03241367200000017 1.11
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931953
+  name "ball(4)"
+}
+Khepera3 {
+  hidden position_0_0 7498.65426265778
+  hidden position_0_1 7491.564571771881
+  hidden rotation_1 0.5032793409268728 -0.5032794122049774 0.7024384230997226 4.366313901152248
+  hidden rotation_2 -0.21179518714625203 0.2117952560695176 -0.9540888680873137 1.6177774470103048
+  rotation -0.5528087327134491 0.5802757194329857 0.5980657108314112 2.14578
+  controller "Lab11Controller"
+  supervisor TRUE
+  turretSlot [
+    Compass {
+    }
+    Display {
+      width 400
+      height 400
+    }
+  ]
+}
