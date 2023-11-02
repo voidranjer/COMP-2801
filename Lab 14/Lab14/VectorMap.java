@@ -1,3 +1,6 @@
+// James Yap        [101276054]
+// Christopher Shen [101149908]
+
 import java.io.*;
 import java.util.*;
 import java.awt.*;
@@ -58,8 +61,8 @@ public class VectorMap {
 
     for (int currObstacleIndex = 0; currObstacleIndex < allObstacles.size(); currObstacleIndex++) {
       // Set polygon to be a new obstacle with no vertices
-      Obstacle newObstacle = new Obstacle();
       Obstacle rawObstacle = allObstacles.get(currObstacleIndex);
+      Obstacle newObstacle = new Obstacle();
 
       // First, make sure the point set has at least 3 points, otherwise quit
       if (rawObstacle.numVertices() < 3)
