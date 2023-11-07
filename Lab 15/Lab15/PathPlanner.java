@@ -1,3 +1,6 @@
+// James Yap     101276054
+// Ewan McCarthy 101189646
+
 import java.util.ArrayList;
 import java.awt.*;
 
@@ -49,13 +52,19 @@ public class PathPlanner {
   // at a point other than at a vertex.
   public boolean supportLineIntersectsObstacle(int x, int y, int supportX, int supportY,
       ArrayList<Obstacle> allObstacles) {
+    // Note: From Slide 12
 
     for (Obstacle ob : allObstacles) {
       for (int i = 0; i < ob.numVertices(); i++) {
+        Point s = new Point(x, y);
+        Point supportPoint = new Point(supportX, supportY);
         Point v = ob.getVertex(i);
         Point va = ob.getVertex((i + 1) % ob.numVertices()); // vertex of obstacle after v
 
-        if (java.awt.geom.Line2D.Double.linesIntersect(x, y, supportX, supportY, v.x, v.y, va.x, va.y))
+        boolean case1 = java.awt.geom.Line2D.Double.linesIntersect(x, y, supportX, supportY, v.x, v.y, va.x, va.y);
+        boolean case2 = (!s.equals(v)) && (!s.equals(va));
+        boolean case3 = (!supportPoint.equals(v) && !supportPoint.equals(va));
+        if (case1 && case2 && case3)
           return true;
       }
     }
@@ -83,34 +92,27 @@ public class PathPlanner {
     for (Obstacle ob : allObstacles) {
       for (int i = 0; i < ob.numVertices(); i++) {
         Point v = ob.getVertex(i);
+        Point prev = ob.getVertex((i - 1 + ob.numVertices()) % ob.numVertices());
+        Point next = ob.getVertex((i + 1) % ob.numVertices());
 
-        int xs = x;
-        int ys = y;
-        int xi = v.x;
-        int yi = v.y;
-        int xip1 = ob.getVertex((i + 1) % ob.numVertices()).x;
-        int yip1 = ob.getVertex((i + 1) % ob.numVertices()).y;
-        int xim1 = ob.getVertex((i - 1 + ob.numVertices()) % ob.numVertices()).x;
-        int yim1 = ob.getVertex((i - 1 + ob.numVertices()) % ob.numVertices()).y;
-
-        int t1 = (xi - xs) * (yip1 - ys) - (yi - ys) * (xip1 - xs);
-        int t2 = (xi - xs) * (yim1 - ys) - (yi - ys) * (xim1 - xs);
+        int t1 = (v.x - x) * (next.y - y) - (v.y - y) * (next.x - x);
+        int t2 = (v.x - x) * (prev.y - y) - (v.y - y) * (prev.x - x);
 
         // Special Case 1 - Slide 11
-        if (xs == xi && ys == yi) {
+        if (x == v.x && y == v.y) {
           supports.add(v);
           continue;
         }
 
         if (isSupportVertex(t1, t2)) {
-          if (!supportLineIntersectsObstacle(xs, ys, xi, yi, allObstacles))
+          if (!supportLineIntersectsObstacle(x, y, v.x, v.y, allObstacles))
             supports.add(v);
         }
 
       }
     }
 
-    if (!supportLineIntersectsObstacle(start.x, start.y, end.x, end.y, allObstacles))
+    if (!supportLineIntersectsObstacle(x, y, end.x, end.y, allObstacles))
       supports.add(end);
 
     return supports;
@@ -123,8 +125,28 @@ public class PathPlanner {
     // Create and store the graph for display access later
     visibilityGraph = new Graph();
 
-    // WRITE YOUR CODE HERE
+    Node s = new Node(start);
+    Node e = new Node(end);
+    visibilityGraph.addNode(s);
+    visibilityGraph.addNode(e);
 
+    for (Obstacle ob : allObstacles) {
+      for (Point v : ob.getVertices()) {
+        if (visibilityGraph.node(v.x, v.y) == null) {
+          visibilityGraph.addNode(new Node(v));
+        }
+      }
+    }
+
+    for (Node n : visibilityGraph.getNodes()) {
+      ArrayList<Point> supports = computeSupportPointsFrom(allObstacles, n.getLocation().x, n.getLocation().y);
+      for (Point p : supports) {
+        Node m = visibilityGraph.node(p.x, p.y);
+
+        if (m != null && !n.equals(m))
+          visibilityGraph.addEdge(n, m);
+      }
+    }
   }
 
   // This procedure displays the results of the PathPlanning algorithm which
