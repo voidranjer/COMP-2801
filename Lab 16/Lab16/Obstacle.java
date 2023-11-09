@@ -1,3 +1,6 @@
+// James Yap        [101276054]
+// Daniel Oshomoji  [101286089]
+
 import java.util.ArrayList;
 import java.awt.Point;
 import java.awt.Polygon;
@@ -130,7 +133,8 @@ public class Obstacle {
           earIndex = i;
 
           for (int k = 0; k < q.size(); k++) {
-            if (k == i - 1 || k == i || k == i + 1)
+            // dont forget to check for wrap arounds for index i + 1 or i - 1
+            if (k == (i - 1 + q.size()) % q.size() || k == i || k == (i + 1) % q.size())
               continue;
 
             Point p = q.get(k);
