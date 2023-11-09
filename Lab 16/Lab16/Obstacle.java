@@ -69,30 +69,27 @@ public class Obstacle {
     return onBoundary;
   }
 
+  private boolean isLeftTurn(Point prev, Point curr, Point next) {
+    return ((curr.x - prev.x) * (next.y - prev.y) - (curr.y - prev.y) * (next.x -
+        prev.x)) > 0;
+  }
+
   // Check if the obstacle is convex
   public boolean isConvex() {
     if (vertices.size() < 3)
       return false;
 
     for (int i = 0; i < vertices.size(); i++) {
-      int prevIndex = (i - 1) % vertices.size();
-      if (prevIndex < 0) {
-        prevIndex += vertices.size();
-      }
-
       // System.out.println("---------" + vertices.size() + "----------");
       // System.out.println("i - 1: " + prevIndex);
       // System.out.println("i: " + i);
       // System.out.println("i + 1: " + (i + 1) % vertices.size());
 
-      Point prev = vertices.get(prevIndex);
+      Point prev = vertices.get((i - 1 + vertices.size()) % vertices.size());
       Point curr = vertices.get(i);
       Point next = vertices.get((i + 1) % vertices.size());
 
-      boolean isLeftTurn = ((curr.x - prev.x) * (next.y - prev.y) - (curr.y - prev.y) * (next.x -
-          prev.x)) > 0;
-
-      if (!isLeftTurn) {
+      if (!isLeftTurn(prev, curr, next)) {
         return false;
       }
     }
@@ -103,10 +100,63 @@ public class Obstacle {
   // Decompose an obstacle into triangles. Return an arraylist of Obstacles where
   // each obstacle is a triangle.
   public ArrayList<Obstacle> splitIntoTriangles() {
+    Obstacle ear = null;
     ArrayList<Obstacle> triangles = new ArrayList<Obstacle>();
 
-    // Replace the line below with your own code
-    triangles.add(this);
+    if (vertices.size() < 3) {
+      triangles.add(this);
+      return triangles;
+    }
+
+    ArrayList<Point> q = new ArrayList<>();
+    for (int i = 0; i < vertices.size(); i++) {
+      q.add(new Point(vertices.get(i)));
+    }
+
+    while (q.size() > 3) {
+      int earIndex = -1;
+
+      for (int i = 0; i < q.size(); i++) {
+        Point prev = q.get((i - 1 + q.size()) % q.size());
+        Point curr = q.get(i);
+        Point next = q.get((i + 1) % q.size());
+
+        if (isLeftTurn(prev, curr, next)) {
+          ear = new Obstacle();
+          ear.addVertex(prev.x, prev.y);
+          ear.addVertex(curr.x, curr.y);
+          ear.addVertex(next.x, next.y);
+
+          earIndex = i;
+
+          for (int k = 0; k < q.size(); k++) {
+            if (k == i - 1 || k == i || k == i + 1)
+              continue;
+
+            Point p = q.get(k);
+            if (ear.contains(p) || ear.pointOnBoundary(p)) {
+              earIndex = -1;
+            }
+          }
+          if (earIndex != -1)
+            break;
+        }
+
+      }
+
+      if (earIndex == -1)
+        return triangles;
+
+      q.remove(earIndex);
+      triangles.add(ear);
+
+    }
+
+    Obstacle lastObstacle = new Obstacle();
+    lastObstacle.addVertex(q.get(0).x, q.get(0).y);
+    lastObstacle.addVertex(q.get(1).x, q.get(1).y);
+    lastObstacle.addVertex(q.get(2).x, q.get(2).y);
+    triangles.add(lastObstacle);
 
     return triangles;
   }
