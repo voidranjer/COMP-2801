@@ -20,7 +20,7 @@ public class VectorMap {
   private int                   width;
   private int                   height;
   private double                resolution;
-  private ArrayList<Obstacle>   obstacles;        // The original obstacles
+  private ArrayList<Obstacle>   allObstacles;        // The original obstacles
   private ArrayList<Obstacle>   convexObstacles;  // list of convex obstacles (with non-convex ones triangluated
   private boolean               reduced;       // true only if the map has been reduced by applying the line-fitting
   private boolean               triangulated;  // true only if the non-convex obstacles have been triangulated
@@ -33,19 +33,19 @@ public class VectorMap {
     reduced = true;
     triangulated = false;
     
-    obstacles = new ArrayList<Obstacle>();
+    allObstacles = new ArrayList<Obstacle>();
     convexObstacles = new ArrayList<Obstacle>();
   }
 
   // Add an obstacle to the map
-  public void addObstacle(Obstacle ob) { obstacles.add(ob); }
+  public void addObstacle(Obstacle ob) { allObstacles.add(ob); }
   
   // Get methods
   public ArrayList<Obstacle> getObstacles() { 
     // Make sure that the polygon version of the obstacle has been computed
-    for (Obstacle ob: obstacles)
+    for (Obstacle ob: allObstacles)
       ob.computePolygon();
-    return obstacles; 
+    return allObstacles; 
   }
   
   // Get methods
@@ -53,7 +53,7 @@ public class VectorMap {
     if (!triangulated) {
       triangulated = true;
       convexObstacles.clear();
-      for (Obstacle ob: obstacles) {
+      for (Obstacle ob: allObstacles) {
         if (ob.isConvex())
           convexObstacles.add(ob);
         else 
@@ -74,7 +74,7 @@ public class VectorMap {
   
   // Clear the obstacles from the map to get reqady for a new trace
   public void clear() {
-    obstacles.clear();
+    allObstacles.clear();
     convexObstacles.clear();
     reduced = false;
     triangulated = false;
@@ -89,33 +89,33 @@ public class VectorMap {
   public void applyLineTolerance() {
     ArrayList<Obstacle>    newObstacles = new ArrayList<Obstacle>();
         
-    for(Obstacle ob: obstacles) {
+    for(Obstacle ob: allObstacles) {
       // Make sure there are at least 3 points, otherwise discard the data
-      if (ob.size() > 2) {
+      if (ob.numVertices() > 2) {
         Obstacle reducedOb = new Obstacle();
         // Get the first two points, add the first as the reduced obstacle's first vertex
         int a = 0;
         reducedOb.addVertex(ob.getVertex(0).x, ob.getVertex(0).y);
                 
         // Now add the rest
-        for (int b=1; b<ob.size(); b++) {
+        for (int b=1; b<ob.numVertices(); b++) {
           // Check if any points are too far away
           for (int i=a+1; i<b; i++) {
             if (distanceToLine(ob.getVertex(a), ob.getVertex(b), ob.getVertex(i)) > LINE_TOLERANCE) {
               // It is too far, then add the last point to the polygon and start a new line
-              if (!((reducedOb.getVertex(reducedOb.size()-1).x == ob.getVertex(b-1).x) && 
-                    (reducedOb.getVertex(reducedOb.size()-1).y == ob.getVertex(b-1).y)))
+              if (!((reducedOb.getVertex(reducedOb.numVertices()-1).x == ob.getVertex(b-1).x) && 
+                    (reducedOb.getVertex(reducedOb.numVertices()-1).y == ob.getVertex(b-1).y)))
                 reducedOb.addVertex(ob.getVertex(b-1).x, ob.getVertex(b-1).y);
               a = b-1;
             }
           }
         }
         // Replace the older obstacle with the reduced one, provided that it has at least three vertices
-        if (reducedOb.size() > 2)
+        if (reducedOb.numVertices() > 2)
           newObstacles.add(reducedOb);
        }
     }
-    obstacles = newObstacles;
+    allObstacles = newObstacles;
     reduced = true;
   }
   
@@ -134,8 +134,8 @@ public class VectorMap {
         theFile.writeInt(width);
         theFile.writeInt(height);
         theFile.writeDouble(resolution);
-        theFile.writeInt(obstacles.size());
-        for (Obstacle ob:obstacles) {
+        theFile.writeInt(allObstacles.size());
+        for (Obstacle ob:allObstacles) {
           theFile.writeInt(ob.getVertices().size());
           for (Point p: ob.getVertices()) {
             theFile.writeInt((int)(p.x*resolution));
@@ -179,7 +179,7 @@ public class VectorMap {
               Point p = new Point(theFile.readInt(),theFile.readInt());
               ob.getVertices().add(p);
             }
-            obstacles.add(ob);
+            allObstacles.add(ob);
           }
           theFile.close();
         }
@@ -199,7 +199,7 @@ public class VectorMap {
     try {
       // Display the obstacles
       if (!reduced) return;  /// Do not display the map if not yet reduced
-      for (Obstacle ob: obstacles) {
+      for (Obstacle ob: allObstacles) {
         ArrayList<Point>  vertices = ob.getVertices();
         
         // Draw the edges first
