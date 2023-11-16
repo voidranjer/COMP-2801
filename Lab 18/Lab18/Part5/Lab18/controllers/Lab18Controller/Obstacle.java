@@ -1,6 +1,3 @@
-// James Yap 101276054
-// Jason Wu 101233618
-
 import java.util.ArrayList;
 import java.awt.Point;
 import java.awt.Polygon;
