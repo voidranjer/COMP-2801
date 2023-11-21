@@ -1,0 +1,131 @@
+#VRML_SIM R2023a utf8
+
+EXTERNPROTO "../protos/Khepera3.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/appearances/protos/Parquetry.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/factory/containers/protos/WoodenBox.proto"
+
+WorldInfo {
+  coordinateSystem "NUE"
+}
+Viewpoint {
+  orientation 0.7071067811865476 -0.7071067811865475 0 3.141592653589793
+  position 0.004173735569847608 7.492388757957924 0.19459490756799988
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+DEF floor RectangleArena {
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931957
+  name "1"
+  floorSize 3 4
+  floorAppearance Parquetry {
+    type "light strip"
+  }
+}
+Khepera3 {
+  translation -0.65 0 0
+  rotation 1 0 0 -1.5707953071795862
+  controller "Lab19Controller"
+  turretSlot [
+    Compass {
+    }
+    Display {
+      width 400
+      height 300
+    }
+  ]
+}
+WoodenBox {
+  translation 0.521896 0.05 0.771171
+  rotation -0.5773491707345505 0.5773508184163796 0.5773508184163796 2.0943967500765917
+  name "wooden box(8)"
+  size 0.6 0.1 0.1
+}
+WoodenBox {
+  translation 1.5119 0.05 -0.388829
+  rotation -0.9999999999997401 5.0980765517166e-07 5.098076552328925e-07 1.5707963267951566
+  name "wooden box(12)"
+  size 0.6 0.1 0.1
+}
+WoodenBox {
+  translation 1.4119 0.05 1.07117
+  rotation -0.5773491707345505 0.5773508184163796 0.5773508184163796 2.0943967500765917
+  name "wooden box(9)"
+  size 0.6 0.1 0.1
+}
+WoodenBox {
+  translation 0.621072 0.05 -0.529794
+  rotation -0.37796364088773854 0.6546539109204513 0.6546539109204514 2.4188598619893837
+  name "wooden box(7)"
+  size 1.5 0.1 0.1
+}
+WoodenBox {
+  translation 0.180803 0.05 0.00407414
+  rotation -0.5773492478224381 -0.5773507798725421 -0.577350779872542 2.0943966344446547
+  name "wooden box(6)"
+  size 0.4 0.4 0.1
+}
+WoodenBox {
+  translation 1.40983 0.05 -1.01521
+  rotation -0.9999999999966269 -1.8366025517345202e-06 -1.8366025516732878e-06 1.5707963267982699
+  name "wooden box(22)"
+  size 0.3 0.6 0.1
+}
+WoodenBox {
+  translation -0.609197 0.05 1.02407
+  rotation -0.5773492478224381 -0.5773507798725421 -0.577350779872542 2.0943966344446547
+  name "wooden box(20)"
+  size 0.4 0.4 0.1
+}
+WoodenBox {
+  translation -0.649228 0.05 -0.702524
+  rotation -0.5773492478224381 -0.5773507798725421 -0.577350779872542 2.0943966344446547
+  name "wooden box(1)"
+  size 0.4 0.4 0.1
+}
+WoodenBox {
+  translation -1.47866 0.05 0.092323
+  rotation -0.37796364088773854 0.6546539109204513 0.6546539109204514 2.4188598619893837
+  name "wooden box(2)"
+  size 0.6 0.2 0.1
+}
+WoodenBox {
+  translation -0.98124 0.05 1.48732
+  rotation -0.9999999999997401 5.0980765517166e-07 5.098076552328925e-07 1.5707963267951566
+  name "wooden box(13)"
+  size 1.9 0.025 0.1
+}
+WoodenBox {
+  translation -0.97124 0.05 -1.49268
+  rotation -0.9999999999997401 5.0980765517166e-07 5.098076552328925e-07 1.5707963267951566
+  name "wooden box(19)"
+  size 1.9 0.025 0.1
+}
+WoodenBox {
+  translation 0.96876 0.05 -1.49268
+  rotation -0.9999999999997401 5.0980765517166e-07 5.098076552328925e-07 1.5707963267951566
+  name "wooden box(18)"
+  size 1.9 0.025 0.1
+}
+WoodenBox {
+  translation 0.99876 0.05 1.48732
+  rotation -0.9999999999997401 5.0980765517166e-07 5.098076552328925e-07 1.5707963267951566
+  name "wooden box(17)"
+  size 1.9 0.025 0.1
+}
+WoodenBox {
+  translation 1.98876 0.05 -0.00268052
+  rotation -0.5773494066552667 0.5773507004563222 0.5773507004563222 2.0943963961952172
+  name "wooden box(11)"
+  size 3 0.025 0.1
+}
+WoodenBox {
+  translation -1.99124 0.05 -0.0026719
+  rotation -0.5773494066552667 0.5773507004563222 0.5773507004563222 2.0943963961952172
+  name "wooden box(16)"
+  size 3 0.025 0.1
+}
