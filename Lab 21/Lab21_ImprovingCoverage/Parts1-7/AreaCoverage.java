@@ -94,10 +94,28 @@ public class AreaCoverage {
 
     // ADD YOUR CODE HERE
     for (Obstacle ob : obstacles) {
+      Node lastNode = null;
+
       for (int i = 0; i < ob.getExtendedVertices().size(); i++) {
         java.awt.geom.Point2D.Double vi, vip1;
         vi = ob.getExtendedVertex(i);
         vip1 = ob.getExtendedVertex((i+1)%ob.numVertices());
+
+        Node viNode = new Node(vi);
+        
+        // First extended vertex
+        if (lastNode == null) {
+          viNode.setSelected(true);
+        }
+        
+        // Every other extended vertex of the obstacle
+        else {
+          gridGraph.addEdge(lastNode, viNode);
+          gridGraph.edge(lastNode, viNode).setSelected(true);
+        }
+
+        gridGraph.addNode(viNode);
+        lastNode = viNode;
         
         double dist = vi.distance(vip1);
         int nCount = (int) Math.ceil(dist/ROBOT_DIAMETER - 1);
@@ -108,23 +126,26 @@ public class AreaCoverage {
         double ys = vi.y;
         double ye = vip1.y;
 
-        gridGraph.addNode(new Node(vi));
         for (int k = 1; k <= nCount; k++) {
           double xk = xs + (xe-xs)*gap/dist*k;
           double yk = ys + (ye-ys)*gap/dist*k;
           
-          Node node = new Node(new java.awt.geom.Point2D.Double(xk, yk));
-          gridGraph.addNode(node);
+          Node interimNode = new Node(new java.awt.geom.Point2D.Double(xk, yk));
+          gridGraph.addNode(interimNode);
+          gridGraph.addEdge(lastNode, interimNode);
+          gridGraph.edge(lastNode, interimNode).setSelected(true);
+          lastNode = interimNode;
         }
-        // gridGraph.addNode(new Node(vip1));
+        // gridGraph.addNode(new Node(vip1)); // Warning: Running this would double add the nodes at the corners
       }
+
+      // Connect the last node to the first node
+      Node copyOfFirst = new Node(ob.getExtendedVertex(0));
+      gridGraph.addNode(copyOfFirst);
+      gridGraph.addEdge(lastNode, copyOfFirst);
+      gridGraph.edge(lastNode, copyOfFirst).setSelected(true);
+      lastNode = copyOfFirst;
     }
-    // for (Obstacle obstacle : obstacles) {
-    //   for (java.awt.geom.Point2D.Double vertex: obstacle.getExtendedVertices()) {
-    //     Node node = new Node(vertex);
-    //     gridGraph.addNode(node);
-    //   }
-    // }
 
   }
 
