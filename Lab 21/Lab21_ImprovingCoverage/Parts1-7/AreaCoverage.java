@@ -161,16 +161,38 @@ public class AreaCoverage {
       Node previous = null;
       Node current = start;
       Node next = start.neighbours().get(0);
+      boolean shouldSelectNode = true;
+      boolean hasBroken = false;
 
       while (previous == null || !current.equals(start)) {
-        if (isInValid(current, obstacles, width, height)) badNodes.add(current);
+        if (isInValid(current, obstacles, width, height)) {
+          badNodes.add(current);
+          shouldSelectNode = true;
+          hasBroken = true;
+        }
+
+        // current node is valid
+        else {
+          if (shouldSelectNode) {
+            current.setSelected(true);
+            shouldSelectNode = false;
+          }
+        }
+
         previous = current;
         current = next;
         next = next.neighbours().get(0);
 
         if (next.equals(previous) && (current.neighbours().size() > 1)) next = current.neighbours().get(1);
       }
+
+      // Handle the last node
       if (isInValid(current, obstacles, width, height)) badNodes.add(current);
+
+      if (hasBroken) {
+        gridGraph.deleteNode(current); // `current` is the start's copy vertex
+        gridGraph.addEdge(previous, start);
+      }
     }
     
     return badNodes;
