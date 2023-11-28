@@ -1,3 +1,6 @@
+// James Yap 101276054
+// Kevin Yuan 101261720
+
 import java.util.Collections;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
@@ -162,13 +165,13 @@ public class AreaCoverage {
       Node current = start;
       Node next = start.neighbours().get(0);
       boolean shouldSelectNode = true;
-      boolean hasBroken = false;
+      // boolean hasBroken = false;
 
       while (previous == null || !current.equals(start)) {
         if (isInValid(current, obstacles, width, height)) {
           badNodes.add(current);
           shouldSelectNode = true;
-          hasBroken = true;
+          // hasBroken = true;
         }
 
         // current node is valid
@@ -189,10 +192,10 @@ public class AreaCoverage {
       // Handle the last node
       if (isInValid(current, obstacles, width, height)) badNodes.add(current);
 
-      if (hasBroken) {
-        gridGraph.deleteNode(current); // `current` is the start's copy vertex
-        gridGraph.addEdge(previous, start);
-      }
+      // if (hasBroken) {
+      //   gridGraph.deleteNode(current); // `current` is the start's copy vertex
+      //   gridGraph.addEdge(previous, start);
+      // }
     }
     
     return badNodes;
