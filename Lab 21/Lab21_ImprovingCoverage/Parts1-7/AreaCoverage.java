@@ -157,6 +157,21 @@ public class AreaCoverage {
     ArrayList<Node> badNodes = new ArrayList<Node>();
     
     // ADD YOUR CODE HERE
+    for (Node start : gridGraph.selectedNodes()) {
+      Node previous = null;
+      Node current = start;
+      Node next = start.neighbours().get(0);
+
+      while (previous == null || !current.equals(start)) {
+        if (isInValid(current, obstacles, width, height)) badNodes.add(current);
+        previous = current;
+        current = next;
+        next = next.neighbours().get(0);
+
+        if (next.equals(previous) && (current.neighbours().size() > 1)) next = current.neighbours().get(1);
+      }
+      if (isInValid(current, obstacles, width, height)) badNodes.add(current);
+    }
     
     return badNodes;
   }
