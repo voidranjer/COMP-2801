@@ -1,5 +1,7 @@
-// Author: James Yap (SN:101276054)
-// Partner: amirajumokeabdurrah@cmail.carleton.ca (SN:101222107)
+// Author: Mark Lanthier (SN:100000001)
+//Room: 41
+//Author: Kuba Potera (SN:101115432)
+//Author: Leah Durham (SN:101192067)
 
 import com.cyberbotics.webots.controller.DistanceSensor;
 import com.cyberbotics.webots.controller.Motor;
@@ -15,20 +17,6 @@ public class Lab2Controller {
   static final byte CURVE_RIGHT = 4;
 
   static final double MAX_SPEED = 5; // maximum speed of the epuck robot
-
-  // Inclusive
-  public static boolean inRangeOf(int lowerBound, int upperBound, int value) {
-    return lowerBound <= value && value <= upperBound;
-  }
-
-  // Inclusive (0 = too low, 1 = too high, 2 = just right)
-  public static int rangeCompare(int lowerBound, int upperBound, int value) {
-    if (value < lowerBound)
-      return 0;
-    if (value > upperBound)
-      return 1;
-    return 2;
-  }
 
   public static void main(String[] args) {
 
@@ -51,95 +39,85 @@ public class Lab2Controller {
     rightAngledSensor.enable(timeStep);
     rightSideSensor.enable(timeStep);
 
-    final int FAR_THRESH = 120;
-    final int CLOSE_THRESH = 140;
-
     // Initialize the logic variable for turning
     byte currentMode = STRAIGHT;
     double leftSpeed, rightSpeed;
 
     while (robot.step(timeStep) != -1) {
       // SENSE: Read the distance sensors
-
-      double rightSideValue = rightSideSensor.getValue();
-      double rightAngledValue = rightAngledSensor.getValue();
-      double rightAheadValue = rightAheadSensor.getValue();
-      double leftAheadValue = leftAheadSensor.getValue();
-
-      boolean rightSideCollide = rightSideValue > CLOSE_THRESH;
-      boolean rightAngledCollide = rightAngledValue > CLOSE_THRESH;
-      boolean rightAheadCollide = rightAheadValue > CLOSE_THRESH;
-      boolean leftAheadCollide = leftAheadValue > CLOSE_THRESH;
-
-      boolean rightSideDetach = rightSideValue < FAR_THRESH;
-
-      boolean frontCollide = leftAheadCollide && rightAheadCollide;
-
       // THINK: Check for obstacle and decide how we need to turn
+      // THINK: Check for obstacle and decide how we need to turn
+      // System.out.println("RS value: "+rightSideSensor.getValue());
       switch (currentMode) {
         case STRAIGHT:
-          System.out.println("STRAIGHT");
-
-          if (rightSideDetach && !rightAngledCollide && !rightAheadCollide && !leftAheadCollide)
-            currentMode = PIVOT_RIGHT;
-
-          else if (frontCollide)
-            currentMode = SPIN_LEFT;
-
-          else if (rightSideCollide)
-            currentMode = CURVE_LEFT;
-
-          else if (rightSideDetach)
+          // System.out.println("STRAIGHT");
+          if ((rightSideSensor.getValue() > 70) && (rightSideSensor.getValue() < 90)) {
             currentMode = CURVE_RIGHT;
+          } else if ((rightSideSensor.getValue() > 80) || (rightAngledSensor.getValue() > 80)) {
+            currentMode = CURVE_LEFT;
+          }
+          if ((rightAheadSensor.getValue() > 80) || leftAheadSensor.getValue() > 80) {
+            currentMode = SPIN_LEFT;
+          } else if (rightSideSensor.getValue() < 70) {
+            currentMode = PIVOT_RIGHT;
+          }
+          // check side if too close/far
+          // too close curve left, too far curve right
+          // check in front for obsticles, spin left
 
           break;
         case CURVE_RIGHT:
-          System.out.println("CURVE RIGHT");
-          if (rightAngledCollide || rightSideCollide)
+          // System.out.println("CURVE RIGHT");
+          // check if close enough to go straight
+          if (rightSideSensor.getValue() < 80) {
+            currentMode = STRAIGHT;
+          } else if ((rightAheadSensor.getValue() > 80) || (leftAheadSensor.getValue() > 80)) {
             currentMode = SPIN_LEFT;
+          }
           break;
         case PIVOT_RIGHT:
-          System.out.println("PIVOT RIGHT");
-          if (frontCollide)
+          // System.out.println("PIVOT RIGHT");
+          if (rightAngledSensor.getValue() > 60) {
+            currentMode = STRAIGHT;
+          } else if (leftAheadSensor.getValue() > 80) {
             currentMode = SPIN_LEFT;
-          else if (rightSideCollide || rightAngledCollide || rightAheadCollide)
-            currentMode = CURVE_LEFT;
+          }
           break;
         case SPIN_LEFT:
-          System.out.println("SPIN LEFT");
-          if (!rightAngledCollide && !rightAheadCollide && !leftAheadCollide)
+          // System.out.println("SPIN LEFT");
+          // check if
+          if (rightAheadSensor.getValue() < 90) {
             currentMode = STRAIGHT;
+          }
           break;
         case CURVE_LEFT:
-          System.out.println("CURVE LEFT");
-          if (rightSideDetach)
+          // System.out.println("CURVE LEFT");
+          if (rightSideSensor.getValue() < 80) {
             currentMode = STRAIGHT;
-          if (rightSideCollide || rightAngledCollide)
+          }
+          if ((leftAheadSensor.getValue() > 90) || (rightAheadSensor.getValue() > 90)) {
             currentMode = SPIN_LEFT;
+          }
           break;
       }
-
-      // Final catch-all
-      if (frontCollide)
-        currentMode = SPIN_LEFT;
 
       // REACT: Move motors accordingly
       switch (currentMode) {
         case SPIN_LEFT:
-          leftMotor.setVelocity(-1 * MAX_SPEED * 0.5);
-          rightMotor.setVelocity(MAX_SPEED * 0.5);
+          leftMotor.setVelocity(-1 * MAX_SPEED);
+          rightMotor.setVelocity(MAX_SPEED);
           break;
         case PIVOT_RIGHT:
-          leftMotor.setVelocity(MAX_SPEED * 0.5);
-          rightMotor.setVelocity(0);
+          leftMotor.setVelocity(MAX_SPEED);
+          rightMotor.setVelocity(-1 * MAX_SPEED);
           break;
         case CURVE_LEFT:
-          leftMotor.setVelocity(MAX_SPEED * 0.75);
+          leftMotor.setVelocity(0.75 * MAX_SPEED);
           rightMotor.setVelocity(MAX_SPEED);
           break;
         case CURVE_RIGHT:
           leftMotor.setVelocity(MAX_SPEED);
-          rightMotor.setVelocity(MAX_SPEED * 0.75);
+          rightMotor.setVelocity(0.75 * MAX_SPEED);
           break;
         default: // This handles the STRAIGHT case
           leftMotor.setVelocity(MAX_SPEED);

@@ -1,4 +1,4 @@
-#VRML_SIM R2023a utf8
+#VRML_SIM R2024a utf8
 
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/factory/containers/protos/CardboardBox.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/lights/protos/CeilingLight.proto"
@@ -19,7 +19,7 @@ WorldInfo {
 }
 Viewpoint {
   orientation -0.7071057814660382 0.7071077809056435 5.551115123136879e-17 3.1415966524690035
-  position 0.00010594142809749897 33.6850449740578 -7.325418643159358e-05
+  position -0.7162809722021085 33.68506809129986 7.45900035498887
   follow "Pioneer 3-DX - 1"
   followType "None"
 }
@@ -456,7 +456,7 @@ WoodenBox {
   size 3 2 0.6
 }
 HoneyJar {
-  translation -1.24 0.11542144247439838 5.31
+  translation -0.1 0.115421 9.34
   rotation 0.5773502691896257 -0.5773502691896256 0.5773502691896257 2.0943951023931957
   mass 0.2
   color 0 1 0

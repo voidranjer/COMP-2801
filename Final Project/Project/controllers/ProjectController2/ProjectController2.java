@@ -13,14 +13,22 @@ import com.cyberbotics.webots.controller.Lidar;
 
 public class ProjectController2 {
 
-  private static final byte    CAMERA_WIDTH = 64;
-  private static final byte    CAMERA_HEIGHT = 64;
-  private static final double  GRIPPER_MOTOR_MAX_SPEED = 0.1;
+  private static final byte     CAMERA_WIDTH = 64;
+  private static final byte     CAMERA_HEIGHT = 64;
+  private static final double   GRIPPER_MOTOR_MAX_SPEED = 0.1;
+  private static final double   MAX_SPEED = 12.3; // maximum speed of the epuck robot
+  private static final double   COMPASS_THRESH = 1; // degrees
   
   // Various modes for the robot to be in
-  static final byte AAAA  = 0;
-  static final byte BBBB  = 1;
-  static final byte CCCC  = 2;
+  private static final byte STRAIGHT  = 0;
+  private static final byte SPIN_LEFT  = 1;
+  private static final byte SPIN_RIGHT  = 2;
+  private static final byte CURVE_LEFT  = 3;
+  private static final byte CURVE_RIGHT  = 4;
+  private static final byte PIVOT_LEFT  = 5;
+  private static final byte PIVOT_RIGHT  = 6;
+  private static final byte STOP  = 7;
+  private static final String[] MODE_NAMES = {"STRAIGHT", "SPIN_LEFT", "SPIN_RIGHT", "CURVE_LEFT", "CURVE_RIGHT", "PIVOT_LEFT", "PIVOT_RIGHT", "STOP"};
   
   private static Robot           robot;
   private static Motor           leftMotor;
@@ -38,6 +46,10 @@ public class ProjectController2 {
   private static Compass         compass;
   private static Accelerometer   accelerometer;
   private static Camera          camera;
+
+  private static byte            currentMode;
+  private static double          forwardDistance;
+  private static int             step = 0;
   
   // Wait for a certain number of milliseconds
   private static void delay(int milliseconds, int timeStep) {
@@ -62,6 +74,66 @@ public class ProjectController2 {
     gripperRightSide.setVelocity(GRIPPER_MOTOR_MAX_SPEED);
     gripperLeftSide.setPosition(position);
     gripperRightSide.setPosition(position);
+  }
+
+  private static double sin(double angle) {
+    return Math.sin(Math.toRadians(angle));
+  }
+
+  private static double cos(double angle) {
+    return Math.cos(Math.toRadians(angle));
+  }
+	  
+  // This method checks whether distance between two doorway points is ≥ 70cm and ≤ 110cm
+  private static boolean isDoorway(int x1, int y1, int x2, int y2) {
+    double distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+    return distance >= 70 && distance <= 110;
+  }
+
+  // Read the compass
+  private static int getCompassReadingInDegrees() {
+    double compassReadings[] = compass.getValues();
+    double rad = Math.atan2(compassReadings[0], compassReadings[1]);
+    double bearing = (rad - Math.PI/2) / Math.PI * 180.0;
+    if (bearing > 360)
+      bearing = 360 - bearing;
+    if (bearing < 0)
+      bearing = 360 + bearing;
+    // if (bearing > 180)
+    //   bearing = 360 - bearing;
+    // if (bearing < -180)
+    //   bearing = 360 + bearing;
+    return (int)(bearing);
+  }
+
+  private static byte alignTo(int bearing) {
+    int currentBearing = getCompassReadingInDegrees();
+    if (currentBearing < bearing - COMPASS_THRESH) return SPIN_LEFT;
+    if (currentBearing > bearing + COMPASS_THRESH) return SPIN_RIGHT;
+    return STOP;
+  }
+
+  private static boolean checkBearing(int bearing) {
+    int currentBearing = getCompassReadingInDegrees();
+    // System.out.println(currentBearing);
+    return currentBearing >= bearing - COMPASS_THRESH && currentBearing <= bearing + COMPASS_THRESH;
+  }
+
+  private static byte step0() {
+    if (!checkBearing(270)) return alignTo(270);
+    
+    if (forwardDistance <= 100) {
+      step = 1;
+      return STOP;
+    }
+    return STRAIGHT;
+  }
+
+  private static byte step1() {
+    if (!checkBearing(185)) return alignTo(185);
+
+    step = 2;
+    return STOP;
   }
 
   // This is where it all begins
@@ -107,42 +179,107 @@ public class ProjectController2 {
     compass.enable(timeStep);
     
     // Prepare the jar detecting sensor
-    jarDetectedSensor= new TouchSensor("touch sensor");
+    jarDetectedSensor = new TouchSensor("touch sensor");
     jarDetectedSensor.enable(timeStep);
     
     //  Prepare the Lidar sensor
     Lidar lidar = new Lidar("Sick LMS 291");
     lidar.enable(timeStep);
+    float lidarValues[] = null;
       
-    // Run the robot
-    byte currentMode = AAAA;
-    
+    // Run the robot   
     while (robot.step(timeStep) != -1) {
       // SENSE: Read the sensors
+      lidarValues = lidar.getRangeImage();
+      forwardDistance = lidarValues[89] * 100;
 
-      System.out.println(currentMode);
+      // // Lidar
+      // final int ADJACENCY_TOLERANCE = 15; //cm
+      // int leftDoorwayAngle, rightDoorwayAngle;
+      // leftDoorwayAngle = rightDoorwayAngle = -1;
+
+      // // Find left doorway gap
+      // for (int i = 0; i < lidarValues.length - 1; i++) {
+      //   double rangeCM = lidarValues[i] * 100;
+      //   double nextRangeCM = lidarValues[i + 1] * 100;
+      //   if (Math.abs(rangeCM - nextRangeCM) > ADJACENCY_TOLERANCE) {
+      //     leftDoorwayAngle = getCompassReadingInDegrees() + 90 - i;
+      //     break;
+      //   }
+      // }
+
+      // // Find right doorway gap
+      // for (int i = lidarValues.length - 1; i > 0; i--) {
+      //   double rangeCM = lidarValues[i] * 100;
+      //   double prevRangeCM = lidarValues[i - 1] * 100;
+      //   if (Math.abs(rangeCM - prevRangeCM) > ADJACENCY_TOLERANCE) {
+      //     rightDoorwayAngle = getCompassReadingInDegrees() + 90 - i;
+      //     break;
+      //   }
+      // }
+
+      // int averageAngle = (leftDoorwayAngle + rightDoorwayAngle) / 2;
+      // System.out.println(averageAngle);
+
+      // Find max value of lidar values
+      // double max = 0;
+      // int maxIndex = 0;
+      // for (int i = 0; i < lidarValues.length; i++) {
+      //   if (lidarValues[i] > max) {
+      //     max = lidarValues[i];
+      //     maxIndex = i;
+      //   }
+      // }
+      // System.out.println(maxIndex);
+
+      // final int LOW_THRESH = 80;
+      // final int HIGH_THRESH = 100;
+      // final int RELEASE = 0;
 
       // THINK: Make a decision as to what MODE to be in
-      switch(currentMode) {
-        case AAAA:
+      switch (step) {
+        case 0:
+          currentMode = step0();
           break;
-          
-        case BBBB:
-          break;
-          
-        case CCCC:
+        case 1:
+          currentMode = step1();
           break;
       }
            
-      // REACT: Move motors according to the MODE
-      switch(currentMode) {
-        case AAAA: //System.out.println("Robot 2: AAAA");
+      // REACT: Move motors accordingly
+      System.out.println(MODE_NAMES[currentMode]);
+      switch (currentMode) {
+        case STRAIGHT:
+          leftMotor.setVelocity(MAX_SPEED);
+          rightMotor.setVelocity(MAX_SPEED);
           break;
-          
-        case BBBB: //System.out.println("Robot 2: BBBB");
+        case SPIN_LEFT:
+          leftMotor.setVelocity(-1 * MAX_SPEED);
+          rightMotor.setVelocity(MAX_SPEED);
           break;
-          
-        case CCCC: //System.out.println("Robot 2: CCCC");
+        case SPIN_RIGHT:
+          leftMotor.setVelocity(MAX_SPEED);
+          rightMotor.setVelocity(-1 * MAX_SPEED);
+          break;
+        case PIVOT_LEFT:
+          leftMotor.setVelocity(-1 * MAX_SPEED);
+          rightMotor.setVelocity(MAX_SPEED);
+          break;
+        case PIVOT_RIGHT:
+          leftMotor.setVelocity(MAX_SPEED);
+          rightMotor.setVelocity(-1 * MAX_SPEED);
+          break;
+        case CURVE_LEFT:
+          leftMotor.setVelocity(0.75 * MAX_SPEED);
+          rightMotor.setVelocity(MAX_SPEED);
+          break;
+        case CURVE_RIGHT:
+          leftMotor.setVelocity(MAX_SPEED);
+          rightMotor.setVelocity(0.75 * MAX_SPEED);
+          break;
+        default:
+          leftMotor.setVelocity(0);
+          rightMotor.setVelocity(0);
           break;
       }
     }

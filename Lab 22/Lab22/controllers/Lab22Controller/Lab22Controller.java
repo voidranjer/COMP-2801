@@ -143,8 +143,6 @@ public class Lab22Controller {
 
       // Find left doorway gap
       for (int i = 0; i < lidarValues.length - 1; i++) {
-        // System.out.println(Math.abs(lidarValues[i] - lidarValues[i + 1]) + " : " + (Math.abs(lidarValues[i] - lidarValues[i + 1]) > ADJACENCY_TOLERANCE));
-
         double rangeCM = lidarValues[i] * 100;
         double nextRangeCM = lidarValues[i + 1] * 100;
 
@@ -181,6 +179,28 @@ public class Lab22Controller {
         displayApp.setDoorwayPoints(leftX, leftY, rightX, rightY, x, y);
       }
       
+      // Compute geometric center
+      double centerX, centerY;
+      centerX = centerY = 0;
+
+      for (int i = 0; i < lidarValues.length; i++) {
+        double d = lidarValues[i] * 100;
+        double px = d * cos(getCompassReadingInDegrees() + 90 - i);
+        double py = d * sin(getCompassReadingInDegrees() + 90 - i);
+        centerX += px;
+        centerY += py;
+      }
+
+      // average
+      centerX /= lidarValues.length;
+      centerY /= lidarValues.length;
+
+      // relative to robot
+      centerX += x;
+      centerY += y;
+
+      displayApp.setWayPoint((int)centerX, (int)centerY, x, y);
+      moveFrom(x, y, centerX, centerY);
     }
   }
 }
