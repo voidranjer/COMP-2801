@@ -132,8 +132,12 @@ public class ProjectController2 {
     return Math.abs(currentBearing - bearing) <= COMPASS_THRESH;
   }
 
-  private static boolean isGreen(int red, int green, int blue) {
-    return (red < 150) && (green > 100) && (blue < 150);
+  private static boolean isColor(String color, int red, int green, int blue) {
+    if (color == "green")
+      return (red < 150) && (green > 100) && (blue < 150);
+    if (color == "blue")
+      return (red < 100) && (green < 100) && (blue > 180);
+    return false;
   }
 
   private static void moveFrom(double x1, double y1, double x2, double y2) {
@@ -246,6 +250,21 @@ public class ProjectController2 {
       // }
       // #endregion
 
+      // THINK
+      switch (currentMode) {
+        case LIDAR:
+          if (detectColor("blue") != "NONE") {
+            currentMode = STOP;
+          }
+          break;
+        case STOP:
+          System.out.println(detectColor("blue"));
+          if (detectColor("blue") == "NONE") {
+            currentMode = LIDAR;
+          }
+          break;
+      }
+
       // REACT: Move motors accordingly
       System.out.println(MODE_NAMES[currentMode]);
       switch (currentMode) {
@@ -286,7 +305,7 @@ public class ProjectController2 {
           rightMotor.setVelocity(0);
           break;
         case LIDAR:
-          lidarGuided();
+          lidarGuidedMove();
           break;
         default:
           break;
@@ -295,7 +314,7 @@ public class ProjectController2 {
   }
 
   // #region
-  private static byte lidarGuided() {
+  private static void lidarGuidedMove() {
     double centerX, centerY;
     centerX = centerY = 0;
     for (int i = 0; i < lidarValues.length; i++) {
@@ -308,33 +327,9 @@ public class ProjectController2 {
     centerX /= lidarValues.length;
     centerY /= lidarValues.length;
     moveFrom(0, 0, centerX, centerY);
-    return LIDAR;
   }
 
-  private static byte step0() {
-    openCloseGripper(0.099f);
-
-    if (!bearingPasses(270))
-      return alignTo(270);
-
-    if (forwardDistance <= 100) {
-      step = 1;
-      return STOP;
-    }
-    return STRAIGHT;
-  }
-
-  private static byte hallwayStep(int bearing, int distance, int nextStep) {
-    if (!bearingPasses(bearing))
-      return alignTo(bearing);
-    if (forwardDistance <= distance) {
-      step = nextStep;
-      return STOP;
-    }
-    return STRAIGHT;
-  }
-
-  private static byte step2() {
+  private static String detectColor(String color) {
     int[] image = camera.getImage();
 
     int leftCount = 0;
@@ -350,7 +345,7 @@ public class ProjectController2 {
         r = Camera.imageGetRed(image, CAMERA_WIDTH, x, yLvl);
         g = Camera.imageGetGreen(image, CAMERA_WIDTH, x, yLvl);
         b = Camera.imageGetBlue(image, CAMERA_WIDTH, x, yLvl);
-        if (isGreen(r, g, b)) {
+        if (isColor(color, r, g, b)) {
           if (x < CAMERA_WIDTH / 3)
             leftCount++;
           else if (x > CAMERA_WIDTH * 2 / 3)
@@ -368,36 +363,23 @@ public class ProjectController2 {
     // centerCount > (rightCount + CAM_THRESH);
     boolean notDetected = !detectedLeft && !detectedCenter && !detectedRight;
 
-    if (jarDetectedSensor.getValue() == 1) {
-      openCloseGripper(0.01f);
-      delay(1000);
-      liftLowerGripper(-0.025f);
-      delay(1000);
-      step = 3;
-      return STOP;
-    }
-
     if (detectedLeft)
-      return CURVE_LEFT;
+      return "LEFT";
     if (detectedRight)
-      return CURVE_RIGHT;
-    if (detectedCenter || notDetected)
-      return STRAIGHT_SLOW;
+      return "RIGHT";
+    if (detectedCenter)
+      return "CENTER";
+    return "NONE";
 
-    return STOP;
+    // if (jarDetectedSensor.getValue() == 1) {
+    // openCloseGripper(0.01f);
+    // delay(1000);
+    // liftLowerGripper(-0.025f);
+    // delay(1000);
+    // step = 3;
+    // return STOP;
+    // }
   }
 
-  private static byte step3() {
-    if (!bearingPasses(180))
-      return alignTo(180);
-
-    // Reverse
-    leftMotor.setVelocity(-1 * MAX_SPEED * 0.3);
-    rightMotor.setVelocity(-1 * MAX_SPEED * 0.3);
-    delay(2000);
-
-    step = 4;
-    return STOP;
-  }
   // #endregion
 }
