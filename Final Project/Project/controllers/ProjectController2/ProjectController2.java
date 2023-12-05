@@ -117,13 +117,11 @@ public class ProjectController2 {
   private static byte alignTo(int bearing) {
     int currentBearing = getCompassReadingInDegrees();
     if (currentBearing < bearing - COMPASS_THRESH) {
-      if (currentBearing < 180 && bearing > 180)
-        return SPIN_RIGHT;
-      else
-        return SPIN_LEFT;
+      return SPIN_LEFT;
     }
-    if (currentBearing > bearing + COMPASS_THRESH)
+    if (currentBearing > bearing + COMPASS_THRESH) {
       return SPIN_RIGHT;
+    }
     return STOP;
   }
 
