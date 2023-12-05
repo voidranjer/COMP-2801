@@ -36,8 +36,9 @@ public class ProjectController2 {
   private static final byte LIDAR = 9;
   private static final byte HOME_IN_BLUE = 10;
   private static final byte HOME_IN_GREEN = 11;
+  private static final byte FACE_EAST = 12;
   private static final String[] MODE_NAMES = { "STRAIGHT", "SPIN_LEFT", "SPIN_RIGHT", "CURVE_LEFT", "CURVE_RIGHT",
-      "PIVOT_LEFT", "PIVOT_RIGHT", "STOP", "STRAIGHT_SLOW", "LIDAR", "HOME_IN_BLUE", "HOME_IN_GREEN" };
+      "PIVOT_LEFT", "PIVOT_RIGHT", "STOP", "STRAIGHT_SLOW", "LIDAR", "HOME_IN_BLUE", "HOME_IN_GREEN", "FACE_EAST" };
 
   private static Robot robot;
   private static Motor leftMotor;
@@ -264,7 +265,7 @@ public class ProjectController2 {
       // THINK
       switch (currentMode) {
         case LIDAR:
-          if (detectColor("blue") != "NONE")
+          if (detectColor("blue") != "NONE" && !hasPayload)
             currentMode = HOME_IN_BLUE;
           break;
         case HOME_IN_BLUE:
@@ -272,6 +273,10 @@ public class ProjectController2 {
           break;
         case HOME_IN_GREEN:
           currentMode = homeInGreen();
+          break;
+        case FACE_EAST:
+          if (bearingPasses(0))
+            currentMode = LIDAR;
           break;
         case STOP:
           // if (detectColor("blue") == "NONE")
@@ -326,6 +331,10 @@ public class ProjectController2 {
           break;
         case HOME_IN_GREEN:
           // handled by homeInGreen
+          break;
+        case FACE_EAST:
+          leftMotor.setVelocity(-1 * MAX_SPEED * 0.1);
+          rightMotor.setVelocity(MAX_SPEED * 0.1);
           break;
         default:
           break;
@@ -410,9 +419,10 @@ public class ProjectController2 {
       delay(1000);
       liftLowerGripper(-0.025f);
       delay(1000);
-      step = 3;
-      return STOP;
+      hasPayload = true;
+      return FACE_EAST;
     }
+
     homeMotors(pos, 0.3);
     return HOME_IN_GREEN;
   }
