@@ -1,0 +1,635 @@
+#VRML_SIM R2023a utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/factory/containers/protos/CardboardBox.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/lights/protos/CeilingLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/kitchen/breakfast/protos/HoneyJar.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/appearances/protos/Parquetry.proto"
+EXTERNPROTO "../protos/Pioneer3Gripper.proto"
+EXTERNPROTO "../protos/Pioneer3dx.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/appearances/protos/Roughcast.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/devices/sick/protos/SickLms291.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/apartment_structure/protos/Wall.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023a/projects/objects/factory/containers/protos/WoodenBox.proto"
+
+WorldInfo {
+  coordinateSystem "NUE"
+}
+Viewpoint {
+  orientation -0.7071057814660382 0.7071077809056435 5.551115123136879e-17 3.1415966524690035
+  position 0.00010594142809749897 33.6850449740578 -7.325418643159358e-05
+  follow "Pioneer 3-DX - 1"
+  followType "None"
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+Pioneer3dx {
+  translation -4.756833044293409 0.0939423548573366 5.307688141334162
+  rotation 0.005581589879061899 0.9999344214200049 -0.009999935692901283 2.175262059626408
+  name "Pioneer 3-DX - 1"
+  controller "ProjectController1"
+  supervisor TRUE
+  extensionSlot [
+    DEF GRIPPER_BASE Pioneer3Gripper {
+      translation 0 -0.01 -0.12
+    }
+    TouchSensor {
+      translation 0 -0.0319998 -0.204
+      rotation -1 0 0 -5.307179586466759e-06
+      boundingObject Box {
+        size 0.2 0.005 0.025
+      }
+    }
+    Camera {
+      translation 1.09534e-08 0.061 -0.14
+      rotation -0.5773499358526729 0.5773479358528951 0.5773529358523396 2.09439
+      boundingObject Box {
+        size 0.01 0.01 0.01
+      }
+      physics Physics {
+      }
+    }
+    Compass {
+      rotation -0.5773489358550934 0.5773519358547601 0.5773499358549823 2.0944
+    }
+    Accelerometer {
+    }
+  ]
+}
+Pioneer3dx {
+  translation 1.1335290167124217 0.09387326314667815 6.289016517783255
+  rotation -0.0008481509814357293 0.999953155709659 -0.009641940997919795 -3.0846797669491495
+  name "Pioneer 3-DX - 2"
+  controller "ProjectController2"
+  supervisor TRUE
+  extensionSlot [
+    DEF GRIPPER_BASE Pioneer3Gripper {
+      translation 0 -0.01 -0.12
+    }
+    SickLms291 {
+      translation -2.36851e-08 0.22 -4.10057e-08
+      rotation -0.577349935856137 0.577349935856137 0.5773509358560258 2.09439
+    }
+    TouchSensor {
+      translation 0 -0.0319998 -0.204
+      rotation -1 0 0 -5.307179586466759e-06
+      boundingObject Box {
+        size 0.2 0.005 0.025
+      }
+    }
+    Camera {
+      translation -2.36851e-08 0.061 -0.14
+      rotation -0.577349935856137 0.577349935856137 0.5773509358560258 2.09439
+      boundingObject Box {
+        size 0.01 0.01 0.01
+      }
+      physics Physics {
+      }
+    }
+    Compass {
+      rotation -0.5773489358550934 0.5773519358547601 0.5773499358549823 2.0944
+    }
+    Accelerometer {
+    }
+  ]
+}
+Pioneer3dx {
+  translation -8.15650019307536 0.09384829827767316 -6.1440246449817595
+  rotation 0.9999999956161938 2.176564141897898e-06 9.361022971947587e-05 0.01923865841190792
+  name "Pioneer 3-DX - 3"
+  controller "ProjectController3"
+  supervisor TRUE
+  extensionSlot [
+    DEF GRIPPER_BASE Pioneer3Gripper {
+      translation 0 -0.01 -0.12
+    }
+    TouchSensor {
+      translation 0 -0.0319998 -0.204
+      rotation -1 0 0 -5.307179586466759e-06
+      boundingObject Box {
+        size 0.2 0.005 0.025
+      }
+    }
+    Camera {
+      translation 6.95571e-09 0.061 -0.14
+      rotation 0.5773479358528951 -0.5773499358526729 -0.5773529358523396 -2.094395307179586
+      boundingObject Box {
+        size 0.01 0.01 0.01
+      }
+      physics Physics {
+      }
+    }
+    Compass {
+      rotation -0.5773489358550934 0.5773519358547601 0.5773499358549823 2.0944
+    }
+    Accelerometer {
+    }
+  ]
+}
+RectangleArena {
+  rotation -0.9999999999997401 5.0980765517166e-07 5.098076552328925e-07 1.5707963267951566
+  floorSize 20 20
+  floorAppearance Parquetry {
+    type "light strip"
+  }
+}
+CeilingLight {
+  translation 9.52 2.4 1.33
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931957
+  pointLightIntensity 4
+}
+CardboardBox {
+  translation 7.86434 0.09979987600002359 -3.13541
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation 5.43264 0.09979987600002353 -1.43784
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(27)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation 5.43185 0.09979987600002357 -0.64784
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(28)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation 3.73185 0.09979987600002346 -0.64954
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(29)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation 2.84264 0.09979987600002338 -1.44043
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(30)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation 0.98346 0.09979987600002321 -2.26229
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(31)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation 8.58434 0.09979987600002362 -3.13469
+  rotation -0.5777363780539193 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(1)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation 3.39593 0.09979987600002325 -4.72988
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(3)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation 2.19751 0.09979987600002312 -6.31108
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(5)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation -0.76288 0.09979987600002294 -5.92404
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(6)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation -0.765973 0.09979987600002309 -2.83404
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(25)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation -2.18597 0.099799876000023 -2.83546
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(26)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation -1.47235 0.09979987600002288 -6.45475
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(24)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation -1.42146 0.09979987600002284 -7.3447
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(7)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation -0.73072 0.09979987600002282 -8.08401
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(8)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation 0.048507599999999804 0.09979987600002291 -7.31323
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(9)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation -6.91411 0.0997998760000226 -4.71019
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(10)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation -6.91491 0.09979987600002266 -3.91019
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(11)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation -4.59694 0.0997998760000229 -1.87787
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(19)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation -4.59763 0.09979987600002295 -1.18787
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(20)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation -4.59832 0.09979987600002298 -0.49787
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(21)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation -5.42316 0.09979987600002266 -5.6587
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(22)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation -5.42242 0.09979987600002263 -6.3987
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(23)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation -8.13169 0.09979987600002242 -7.13141
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(12)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation -8.13495 0.09979987600002257 -3.87141
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(15)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation -8.1341 0.09979987600002255 -4.72141
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(17)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation -8.8609 0.09979987600002234 -7.92214
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(18)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation -9.12495 0.09979987600002252 -3.8724
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(16)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation -8.81245 0.09979987600002241 -6.37209
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(13)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation -9.1435 0.09979987600002245 -5.32242
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(14)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation 3.78516 0.09979987600002331 -3.95949
+  rotation -0.5777363780539194 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(4)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+CardboardBox {
+  translation 9.20434 0.09979987600002366 -3.13407
+  rotation -0.5777363780539193 0.5771571178947456 0.5771571178947456 2.0938160359270857
+  name "cardboard box(2)"
+  size 0.6 0.6 0.2
+  mass 0.51
+}
+WoodenBox {
+  translation -3.71 0.3 -2.78
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931957
+  name "wooden box(2)"
+  size 0.6 2 0.6
+}
+WoodenBox {
+  translation -4.41 0.3 -4.08
+  rotation -1.2986841950112875e-06 -0.7071067811859513 -0.7071067811859513 3.141590056252852
+  name "wooden box(1)"
+  size 0.6 2 0.6
+}
+WoodenBox {
+  translation -1.45 0.3 -1.22
+  rotation -0.9999999999997401 5.0980765517166e-07 5.098076552328925e-07 1.5707963267951566
+  name "wooden box(14)"
+  size 0.6 2 0.6
+}
+WoodenBox {
+  translation -1.45 0.3 -4.47
+  rotation -0.9999999999997401 5.0980765517166e-07 5.098076552328925e-07 1.5707963267951566
+  name "wooden box(15)"
+  size 0.6 2 0.6
+}
+WoodenBox {
+  translation -9.67 -0.02 -7.22
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931957
+  name "wooden box(6)"
+  size 0.2 0.2 0.06
+}
+WoodenBox {
+  translation -9.67 -0.02 -6.92
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931957
+  name "wooden box(7)"
+  size 0.2 0.2 0.06
+}
+WoodenBox {
+  translation -9.67 -0.02 -6.62
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931957
+  name "wooden box(8)"
+  size 0.2 0.2 0.06
+}
+WoodenBox {
+  translation -9.67 -0.02 -6.32
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931957
+  name "wooden box(9)"
+  size 0.2 0.2 0.06
+}
+WoodenBox {
+  translation -9.67 -0.02 -6.02
+  rotation -0.5773502691896258 0.5773502691896258 0.5773502691896258 2.0943951023931957
+  name "wooden box(10)"
+  size 0.2 0.2 0.06
+}
+WoodenBox {
+  translation 2.68 0.3 -4.88
+  rotation -0.9999999999997401 5.0980765517166e-07 5.098076552328925e-07 1.5707963267951566
+  name "wooden box(3)"
+  size 0.6 2 0.6
+}
+WoodenBox {
+  translation 0.71 0.3 -6.58
+  rotation -0.5773484629222062 0.5773511723212164 0.5773511723212164 2.0943978117964437
+  name "wooden box(4)"
+  size 0.6 2 0.6
+}
+WoodenBox {
+  translation -2.08 0.3 -8.29
+  rotation -3.6048756894969645e-07 0.7071067811865016 0.7071067811865016 3.1415919326137742
+  name "wooden box(11)"
+  size 0.6 3 0.6
+}
+WoodenBox {
+  translation -7.08 0.3 -6.6
+  rotation -3.6048756894969645e-07 0.7071067811865016 0.7071067811865016 3.1415919326137742
+  name "wooden box(12)"
+  size 0.6 3 0.6
+}
+WoodenBox {
+  translation -7.84 0.3 -1.9
+  rotation -0.577352311924001 0.5773492478197279 0.5773492478197279 2.094392038294343
+  name "wooden box(13)"
+  size 0.6 3 0.6
+}
+WoodenBox {
+  translation 5.65 0.3 -2.88
+  rotation -3.6048756894969645e-07 0.7071067811865016 0.7071067811865016 3.1415919326137742
+  name "wooden box(5)"
+  size 3 2 0.6
+}
+HoneyJar {
+  translation -1.24 0.11542144247439838 5.31
+  rotation 0.5773502691896257 -0.5773502691896256 0.5773502691896257 2.0943951023931957
+  mass 0.2
+  color 0 1 0
+}
+HoneyJar {
+  translation -3.78 0.11542144247439813 3.29
+  rotation 0.5773502691896257 -0.5773502691896256 0.5773502691896257 2.0943951023931957
+  name "honey jar(4)"
+  mass 0.2
+  color 0 1 0
+}
+HoneyJar {
+  translation -4.76 0.11542144247439828 7.9
+  rotation 0.5773502691896257 -0.5773502691896256 0.5773502691896257 2.0943951023931957
+  name "honey jar(1)"
+  mass 0.2
+  color 0 1 0
+}
+HoneyJar {
+  translation -6.7 0.11542144247439781 1.15
+  rotation 0.5773502691896257 -0.5773502691896257 0.5773502691896258 2.0943951023931957
+  name "honey jar(2)"
+  mass 0.2
+  color 0 1 0
+}
+HoneyJar {
+  translation -8.44 0.11542144247439792 4.95
+  rotation 0.5773502691896257 -0.5773502691896256 0.5773502691896257 2.0943951023931957
+  name "honey jar(3)"
+  mass 0.2
+  color 0 1 0
+}
+Wall {
+  translation -0.109986 0 4.39998
+  rotation -1.2986841950112875e-06 -0.7071067811859513 -0.7071067811859513 3.141590056252852
+  name "wall(1)"
+  size 0.2 8.8 2
+}
+Wall {
+  translation -9.9 0 -0.00998
+  rotation -1.2986841950112875e-06 -0.7071067811859513 -0.7071067811859513 3.141590056252852
+  name "wall(18)"
+  size 0.2 20 2
+}
+Wall {
+  translation 9.91 0 2e-05
+  rotation -1.2986841950112875e-06 -0.7071067811859513 -0.7071067811859513 3.141590056252852
+  name "wall(5)"
+  size 0.2 20 2
+}
+Wall {
+  translation 3e-05 0 -9.92003
+  rotation -0.5773482264552504 0.5773512905541031 0.5773512905541031 2.0943981664974682
+  name "wall(7)"
+  size 0.2 19.6 2
+}
+Wall {
+  translation 3e-05 0 9.89997
+  rotation -0.5773482264552504 0.5773512905541031 0.5773512905541031 2.0943981664974682
+  name "wall(4)"
+  size 0.2 19.6 2
+}
+Wall {
+  translation -5.01005 0 0.0999703
+  rotation -0.5773482264552504 0.5773512905541031 0.5773512905541031 2.0943981664974682
+  name "wall(17)"
+  size 0.2 9.6 2
+}
+Wall {
+  translation 3.96995 0 0.0999229
+  rotation -0.5773482264552504 0.5773512905541031 0.5773512905541031 2.0943981664974682
+  name "wall(6)"
+  size 0.2 8 2
+}
+Wall {
+  translation 7.80995 0 2.19992
+  rotation -0.5773482264552504 0.5773512905541031 0.5773512905541031 2.0943981664974682
+  name "wall(2)"
+  size 0.2 4 2
+}
+Wall {
+  translation 1.97995 0 4.55992
+  rotation -1.2986841950112875e-06 -0.7071067811859513 -0.7071067811859513 3.141590056252852
+  name "wall(8)"
+  size 0.2 4 2
+}
+Wall {
+  translation -0.15003 0.32 9.29992
+  rotation -1.2986841950112875e-06 -0.7071067811859513 -0.7071067811859513 3.141590056252852
+  name "wall(19)"
+  size 0.05 1 1
+  appearance Roughcast {
+    colorOverride 0 0 1
+    textureTransform TextureTransform {
+      scale 1 2.4
+    }
+  }
+}
+Wall {
+  translation 1.86997 0.32 9.78992
+  rotation -0.5773530968242329 -0.5773488553671291 -0.577348855367129 2.0943908609464783
+  name "wall(3)"
+  size 0.05 1 1
+  appearance Roughcast {
+    colorOverride 0 0 1
+    textureTransform TextureTransform {
+      scale 1 2.4
+    }
+  }
+}
+Wall {
+  translation 9.78997 0.32 1.29992
+  rotation -1.2986841950112875e-06 -0.7071067811859513 -0.7071067811859513 3.141590056252852
+  name "wall(21)"
+  size 0.05 1 1
+  appearance Roughcast {
+    colorOverride 0 0 1
+    textureTransform TextureTransform {
+      scale 1 2.4
+    }
+  }
+}
+Wall {
+  translation -0.09003 0.32 9.29992
+  rotation -1.2986841950112875e-06 -0.7071067811859513 -0.7071067811859513 3.141590056252852
+  name "wall(20)"
+  size 0.05 1 1
+}
+Wall {
+  translation 4.07995 0 6.45992
+  rotation -0.5773482264552504 0.5773512905541031 0.5773512905541031 2.0943981664974682
+  name "wall(9)"
+  size 0.2 4 2
+}
+Wall {
+  translation 6.82995 0 8.01992
+  rotation -0.5773482264552504 0.5773512905541031 0.5773512905541031 2.0943981664974682
+  name "wall(14)"
+  size 0.2 2 2
+}
+Wall {
+  translation 5.75995 0 4.30992
+  rotation -0.5773482264552504 0.5773512905541031 0.5773512905541031 2.0943981664974682
+  name "wall(12)"
+  size 0.2 5 2
+}
+Wall {
+  translation 3.77995 0 7.82992
+  rotation -0.9999999999997401 5.0980765517166e-07 5.098076552328925e-07 1.5707963267951566
+  name "wall(10)"
+  size 0.2 4 2
+}
+Wall {
+  translation 7.91995 0 6.39992
+  rotation -0.9999999999997401 5.0980765517166e-07 5.098076552328925e-07 1.5707963267951566
+  name "wall(13)"
+  size 0.2 4 2
+}
+Wall {
+  translation 3.78995 0 2.20992
+  rotation -0.9999999999997401 5.0980765517166e-07 5.098076552328925e-07 1.5707963267951566
+  name "wall(11)"
+  size 0.2 4 2
+}
+Wall {
+  translation 7.86995 0 0.33992
+  rotation -0.9999999999997401 5.0980765517166e-07 5.098076552328925e-07 1.5707963267951566
+  name "wall(15)"
+  size 0.2 0.28 2
+}
+Wall {
+  translation 9.38995 0 0.17992
+  rotation -0.9999999999997401 5.0980765517166e-07 5.098076552328925e-07 1.5707963267951566
+  name "wall(16)"
+  size 0.84 0.6 2
+}
