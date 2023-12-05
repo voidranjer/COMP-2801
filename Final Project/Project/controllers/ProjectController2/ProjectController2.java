@@ -20,7 +20,7 @@ public class ProjectController2 {
 
   // CUSTOM
   private static final double MAX_SPEED = 12.3;
-  private static final double COMPASS_THRESH = 3; // degrees
+  private static final double COMPASS_THRESH = 1; // degrees
   private static final double CAM_THRESH = 10;
 
   // Various modes for the robot to be in
@@ -34,8 +34,10 @@ public class ProjectController2 {
   private static final byte STOP = 7;
   private static final byte STRAIGHT_SLOW = 8;
   private static final byte LIDAR = 9;
+  private static final byte HOME_IN_BLUE = 10;
+  private static final byte HOME_IN_GREEN = 11;
   private static final String[] MODE_NAMES = { "STRAIGHT", "SPIN_LEFT", "SPIN_RIGHT", "CURVE_LEFT", "CURVE_RIGHT",
-      "PIVOT_LEFT", "PIVOT_RIGHT", "STOP", "STRAIGHT_SLOW", "LIDAR" };
+      "PIVOT_LEFT", "PIVOT_RIGHT", "STOP", "STRAIGHT_SLOW", "LIDAR", "HOME_IN_BLUE", "HOME_IN_GREEN" };
 
   private static Robot robot;
   private static Motor leftMotor;
@@ -55,10 +57,10 @@ public class ProjectController2 {
   private static Camera camera;
 
   private static byte currentMode = LIDAR;
-  private static double forwardDistance;
   private static int timeStep = 0;
   private static int step = 0;
   private static float lidarValues[] = null;
+  private static boolean hasPayload = false;
 
   // Wait for a certain number of milliseconds
   private static void delay(int milliseconds) {
@@ -219,6 +221,15 @@ public class ProjectController2 {
       // SENSE: Read the sensors
       lidarValues = lidar.getRangeImage();
 
+      // config
+      final int STOP_THRESH = 70;
+      double minDistanceFront = Double.MAX_VALUE;
+      for (int i = 50; i < 130; i++) {
+        double d = lidarValues[i] * 100;
+        if (d < minDistanceFront)
+          minDistanceFront = d;
+      }
+
       // #region
       // THINK: Make a decision as to what MODE to be in
       // switch (step) {
@@ -253,15 +264,18 @@ public class ProjectController2 {
       // THINK
       switch (currentMode) {
         case LIDAR:
-          if (detectColor("blue") != "NONE") {
-            currentMode = STOP;
-          }
+          if (detectColor("blue") != "NONE")
+            currentMode = HOME_IN_BLUE;
+          break;
+        case HOME_IN_BLUE:
+          currentMode = homeInBlue();
+          break;
+        case HOME_IN_GREEN:
+          currentMode = homeInGreen();
           break;
         case STOP:
-          System.out.println(detectColor("blue"));
-          if (detectColor("blue") == "NONE") {
-            currentMode = LIDAR;
-          }
+          // if (detectColor("blue") == "NONE")
+          // currentMode = LIDAR;
           break;
       }
 
@@ -289,16 +303,16 @@ public class ProjectController2 {
           rightMotor.setVelocity(-1 * MAX_SPEED);
           break;
         case CURVE_LEFT:
-          leftMotor.setVelocity(0.75 * MAX_SPEED * 0.1);
+          leftMotor.setVelocity(0.75 * MAX_SPEED);
           rightMotor.setVelocity(MAX_SPEED);
           break;
         case CURVE_RIGHT:
           leftMotor.setVelocity(MAX_SPEED);
-          rightMotor.setVelocity(0.75 * MAX_SPEED * 0.1);
+          rightMotor.setVelocity(0.75 * MAX_SPEED);
           break;
         case STRAIGHT_SLOW:
-          leftMotor.setVelocity(MAX_SPEED * 0.1);
-          rightMotor.setVelocity(MAX_SPEED * 0.1);
+          leftMotor.setVelocity(MAX_SPEED);
+          rightMotor.setVelocity(MAX_SPEED);
           break;
         case STOP:
           leftMotor.setVelocity(0);
@@ -306,6 +320,12 @@ public class ProjectController2 {
           break;
         case LIDAR:
           lidarGuidedMove();
+          break;
+        case HOME_IN_BLUE:
+          // handled by homeInBlue
+          break;
+        case HOME_IN_GREEN:
+          // handled by homeInGreen
           break;
         default:
           break;
@@ -337,7 +357,7 @@ public class ProjectController2 {
     int centerCount = 0;
     int r, g, b = 0;
 
-    int Y_SCAN_OFFSET = 15;
+    int Y_SCAN_OFFSET = (int) Math.floor(CAMERA_HEIGHT * 0.5);
     // int yLvl = CAMERA_HEIGHT / 2;
     for (int yLvl = CAMERA_HEIGHT / 2 - Y_SCAN_OFFSET; yLvl < CAMERA_HEIGHT / 2 +
         Y_SCAN_OFFSET; yLvl++) {
@@ -358,28 +378,62 @@ public class ProjectController2 {
 
     boolean detectedLeft = leftCount > (rightCount + CAM_THRESH);
     boolean detectedRight = rightCount > (leftCount + CAM_THRESH);
-    boolean detectedCenter = centerCount > 350;
+    boolean detectedCenter = centerCount > leftCount && centerCount > rightCount;
     // boolean detectedCenter = centerCount > (leftCount + CAM_THRESH) &&
     // centerCount > (rightCount + CAM_THRESH);
     boolean notDetected = !detectedLeft && !detectedCenter && !detectedRight;
 
+    if (detectedCenter)
+      return "CENTER";
     if (detectedLeft)
       return "LEFT";
     if (detectedRight)
       return "RIGHT";
-    if (detectedCenter)
-      return "CENTER";
     return "NONE";
 
-    // if (jarDetectedSensor.getValue() == 1) {
-    // openCloseGripper(0.01f);
-    // delay(1000);
-    // liftLowerGripper(-0.025f);
-    // delay(1000);
-    // step = 3;
-    // return STOP;
-    // }
   }
 
+  private static byte homeInBlue() {
+    String pos = detectColor("blue");
+    if (pos == "NONE")
+      return HOME_IN_GREEN;
+    homeMotors(pos, 1);
+    return HOME_IN_BLUE;
+  }
+
+  private static byte homeInGreen() {
+    String pos = detectColor("green");
+    if (jarDetectedSensor.getValue() == 1) {
+      leftMotor.setVelocity(0);
+      rightMotor.setVelocity(0);
+      openCloseGripper(0.01f);
+      delay(1000);
+      liftLowerGripper(-0.025f);
+      delay(1000);
+      step = 3;
+      return STOP;
+    }
+    homeMotors(pos, 0.3);
+    return HOME_IN_GREEN;
+  }
+
+  private static void homeMotors(String pos, double speedFactor) {
+    if (pos == "NONE") {
+      leftMotor.setVelocity(MAX_SPEED * 0.5);
+      rightMotor.setVelocity(-MAX_SPEED * 0.5);
+    }
+    if (pos == "CENTER") {
+      leftMotor.setVelocity(MAX_SPEED * speedFactor);
+      rightMotor.setVelocity(MAX_SPEED * speedFactor);
+    }
+    if (pos == "LEFT") {
+      leftMotor.setVelocity(-1 * MAX_SPEED * 0.5);
+      rightMotor.setVelocity(MAX_SPEED * 0.5);
+    }
+    if (pos == "RIGHT") {
+      leftMotor.setVelocity(MAX_SPEED * 0.5);
+      rightMotor.setVelocity(-1 * MAX_SPEED * 0.5);
+    }
+  }
   // #endregion
 }
