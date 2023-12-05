@@ -13,13 +13,14 @@ import com.cyberbotics.webots.controller.Lidar;
 
 public class ProjectController2 {
 
+  // #region
   private static final byte CAMERA_WIDTH = 64;
   private static final byte CAMERA_HEIGHT = 64;
   private static final double GRIPPER_MOTOR_MAX_SPEED = 0.1;
 
   // CUSTOM
   private static final double MAX_SPEED = 12.3;
-  private static final double COMPASS_THRESH = 1; // degrees
+  private static final double COMPASS_THRESH = 3; // degrees
   private static final double CAM_THRESH = 10;
 
   // Various modes for the robot to be in
@@ -54,12 +55,11 @@ public class ProjectController2 {
 
   private static byte currentMode;
   private static double forwardDistance;
+  private static int timeStep = 0;
   private static int step = 0;
 
-  // #region
-
   // Wait for a certain number of milliseconds
-  private static void delay(int milliseconds, int timeStep) {
+  private static void delay(int milliseconds) {
     int elapsedTime = 0;
     while (elapsedTime < milliseconds) {
       robot.step(timeStep);
@@ -116,17 +116,20 @@ public class ProjectController2 {
 
   private static byte alignTo(int bearing) {
     int currentBearing = getCompassReadingInDegrees();
-    if (currentBearing < bearing - COMPASS_THRESH)
-      return SPIN_LEFT;
+    if (currentBearing < bearing - COMPASS_THRESH) {
+      if (currentBearing < 180 && bearing > 180)
+        return SPIN_RIGHT;
+      else
+        return SPIN_LEFT;
+    }
     if (currentBearing > bearing + COMPASS_THRESH)
       return SPIN_RIGHT;
     return STOP;
   }
 
-  private static boolean checkBearing(int bearing) {
+  private static boolean bearingPasses(int bearing) {
     int currentBearing = getCompassReadingInDegrees();
-    // System.out.println(currentBearing);
-    return currentBearing >= bearing - COMPASS_THRESH && currentBearing <= bearing + COMPASS_THRESH;
+    return Math.abs(currentBearing - bearing) <= COMPASS_THRESH;
   }
 
   private static boolean isGreen(int red, int green, int blue) {
@@ -139,7 +142,7 @@ public class ProjectController2 {
   public static void main(String[] args) {
     // #region
     robot = new Robot();
-    int timeStep = (int) Math.round(robot.getBasicTimeStep());
+    timeStep = (int) Math.round(robot.getBasicTimeStep());
 
     // Set up the motors
     leftMotor = robot.getMotor("left wheel");
@@ -190,8 +193,6 @@ public class ProjectController2 {
 
     // Run the robot
     openCloseGripper(0.099f);
-    delay(1000, timeStep);
-
     while (robot.step(timeStep) != -1) {
       // SENSE: Read the sensors
       lidarValues = lidar.getRangeImage();
@@ -244,15 +245,31 @@ public class ProjectController2 {
 
       // THINK: Make a decision as to what MODE to be in
       switch (step) {
-        case 0:
-          currentMode = step0();
+        case 0: // Go to bottom
+          currentMode = hallwayStep(270, 100, 1);
           break;
-        case 1:
-          currentMode = step1();
+        case 1: // Turn towards window
+          currentMode = hallwayStep(190, Integer.MAX_VALUE, 2);
           break;
-        case 2:
+        case 2: // Home into jar and pick up jar
           currentMode = step2();
           break;
+        case 3: // Reverse gear back to bottom center position
+          currentMode = step3();
+          break;
+        case 4: // First hallway
+          currentMode = hallwayStep(90, 150, 5);
+          break;
+        case 5: // second hallway
+          currentMode = hallwayStep(1, 100, 6);
+          break;
+        case 6: // third hallway
+          currentMode = hallwayStep(270, 120, 7);
+          break;
+        case 7: // fourth hallway
+          currentMode = hallwayStep(1, 100, 8);
+          break;
+
       }
 
       // REACT: Move motors accordingly
@@ -299,7 +316,9 @@ public class ProjectController2 {
   }
 
   private static byte step0() {
-    if (!checkBearing(270))
+    openCloseGripper(0.099f);
+
+    if (!bearingPasses(270))
       return alignTo(270);
 
     if (forwardDistance <= 100) {
@@ -309,12 +328,14 @@ public class ProjectController2 {
     return STRAIGHT;
   }
 
-  private static byte step1() {
-    if (!checkBearing(190))
-      return alignTo(190);
-
-    step = 2;
-    return STOP;
+  private static byte hallwayStep(int bearing, int distance, int nextStep) {
+    if (!bearingPasses(bearing))
+      return alignTo(bearing);
+    if (forwardDistance <= distance) {
+      step = nextStep;
+      return STOP;
+    }
+    return STRAIGHT;
   }
 
   private static byte step2() {
@@ -352,21 +373,13 @@ public class ProjectController2 {
     boolean notDetected = !detectedLeft && !detectedCenter && !detectedRight;
 
     if (jarDetectedSensor.getValue() == 1) {
-      // openCloseGripper(0.01f);
-      // delay(1000, timeStep);
-      // liftLowerGripper(-0.025f);
-      // delay(1000, timeStep);
-      // openCloseGripper(0.099f);
-      // delay(1000, timeStep);
-      // liftLowerGripper(0.001f);
-      // delay(1000, timeStep);
+      openCloseGripper(0.01f);
+      delay(1000);
+      liftLowerGripper(-0.025f);
+      delay(1000);
       step = 3;
       return STOP;
     }
-
-    // if (notDetected) {
-    // return STOP;
-    // }
 
     if (detectedLeft)
       return CURVE_LEFT;
@@ -377,4 +390,18 @@ public class ProjectController2 {
 
     return STOP;
   }
+
+  private static byte step3() {
+    if (!bearingPasses(180))
+      return alignTo(180);
+
+    // Reverse
+    leftMotor.setVelocity(-1 * MAX_SPEED * 0.3);
+    rightMotor.setVelocity(-1 * MAX_SPEED * 0.3);
+    delay(2000);
+
+    step = 4;
+    return STOP;
+  }
+
 }
