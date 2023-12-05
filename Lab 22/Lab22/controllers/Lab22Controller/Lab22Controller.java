@@ -77,7 +77,12 @@ public class Lab22Controller {
     return Math.cos(Math.toRadians(angle));
   }
 	  
-  
+  // This method checks whether distance between two doorway points is ≥ 70cm and ≤ 110cm
+  private static boolean isDoorway(int x1, int y1, int x2, int y2) {
+    double distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+    return distance >= 70 && distance <= 110;
+  }
+
   // This is where it all begins
   public static void main(String[] args) {
     // create the Robot instance.
@@ -168,7 +173,9 @@ public class Lab22Controller {
         }
       }
 
-      if (leftX == -1 || leftY == -1 || rightX == -1 || rightY == -1) {
+      boolean somethingNotDetected = leftX == -1 || leftY == -1 || rightX == -1 || rightY == -1;
+      
+      if (somethingNotDetected || !isDoorway(leftX, leftY, rightX, rightY)) {
         displayApp.setDoorwayPoints(0,0,0,0, x, y);
       } else {
         displayApp.setDoorwayPoints(leftX, leftY, rightX, rightY, x, y);
