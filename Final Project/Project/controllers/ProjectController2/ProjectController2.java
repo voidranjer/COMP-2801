@@ -1,6 +1,6 @@
 // James Yap [101276054]
 
-import java.awt.Point; 
+import java.awt.Point;
 import java.util.ArrayList;
 import com.cyberbotics.webots.controller.Camera;
 import com.cyberbotics.webots.controller.Accelerometer;
@@ -13,49 +13,50 @@ import com.cyberbotics.webots.controller.Lidar;
 
 public class ProjectController2 {
 
-  private static final byte     CAMERA_WIDTH = 64;
-  private static final byte     CAMERA_HEIGHT = 64;
-  private static final double   GRIPPER_MOTOR_MAX_SPEED = 0.1;
-  
-  // CUSTOM
-  private static final double   MAX_SPEED = 12.3;
-  private static final double   COMPASS_THRESH = 1; // degrees
-  private static final double   CAM_THRESH = 10;
-  
-  // Various modes for the robot to be in
-  private static final byte STRAIGHT  = 0;
-  private static final byte SPIN_LEFT  = 1;
-  private static final byte SPIN_RIGHT  = 2;
-  private static final byte CURVE_LEFT  = 3;
-  private static final byte CURVE_RIGHT  = 4;
-  private static final byte PIVOT_LEFT  = 5;
-  private static final byte PIVOT_RIGHT  = 6;
-  private static final byte STOP  = 7;
-  private static final byte STRAIGHT_SLOW  = 8;
-  private static final String[] MODE_NAMES = {"STRAIGHT", "SPIN_LEFT", "SPIN_RIGHT", "CURVE_LEFT", "CURVE_RIGHT", "PIVOT_LEFT", "PIVOT_RIGHT", "STOP", "STRAIGHT_SLOW"};
-  
-  private static Robot           robot;
-  private static Motor           leftMotor;
-  private static Motor           rightMotor;
-  private static Motor           gripperLift;
-  private static Motor           gripperLeftSide;
-  private static Motor           gripperRightSide;
-  private static DistanceSensor  leftSideSensor; 
-  private static DistanceSensor  rightSideSensor;
-  private static DistanceSensor  leftAheadSensor; 
-  private static DistanceSensor  rightAheadSensor;
-  private static DistanceSensor  leftAngledSensor; 
-  private static DistanceSensor  rightAngledSensor;
-  private static TouchSensor     jarDetectedSensor;
-  private static Compass         compass;
-  private static Accelerometer   accelerometer;
-  private static Camera          camera;
+  private static final byte CAMERA_WIDTH = 64;
+  private static final byte CAMERA_HEIGHT = 64;
+  private static final double GRIPPER_MOTOR_MAX_SPEED = 0.1;
 
-  private static byte            currentMode;
-  private static double          forwardDistance;
-  private static int             step = 0;
-  
-  //#region
+  // CUSTOM
+  private static final double MAX_SPEED = 12.3;
+  private static final double COMPASS_THRESH = 1; // degrees
+  private static final double CAM_THRESH = 10;
+
+  // Various modes for the robot to be in
+  private static final byte STRAIGHT = 0;
+  private static final byte SPIN_LEFT = 1;
+  private static final byte SPIN_RIGHT = 2;
+  private static final byte CURVE_LEFT = 3;
+  private static final byte CURVE_RIGHT = 4;
+  private static final byte PIVOT_LEFT = 5;
+  private static final byte PIVOT_RIGHT = 6;
+  private static final byte STOP = 7;
+  private static final byte STRAIGHT_SLOW = 8;
+  private static final String[] MODE_NAMES = { "STRAIGHT", "SPIN_LEFT", "SPIN_RIGHT", "CURVE_LEFT", "CURVE_RIGHT",
+      "PIVOT_LEFT", "PIVOT_RIGHT", "STOP", "STRAIGHT_SLOW" };
+
+  private static Robot robot;
+  private static Motor leftMotor;
+  private static Motor rightMotor;
+  private static Motor gripperLift;
+  private static Motor gripperLeftSide;
+  private static Motor gripperRightSide;
+  private static DistanceSensor leftSideSensor;
+  private static DistanceSensor rightSideSensor;
+  private static DistanceSensor leftAheadSensor;
+  private static DistanceSensor rightAheadSensor;
+  private static DistanceSensor leftAngledSensor;
+  private static DistanceSensor rightAngledSensor;
+  private static TouchSensor jarDetectedSensor;
+  private static Compass compass;
+  private static Accelerometer accelerometer;
+  private static Camera camera;
+
+  private static byte currentMode;
+  private static double forwardDistance;
+  private static int step = 0;
+
+  // #region
 
   // Wait for a certain number of milliseconds
   private static void delay(int milliseconds, int timeStep) {
@@ -65,7 +66,7 @@ public class ProjectController2 {
       elapsedTime += timeStep;
     }
   }
-  
+
   // Put the gripper up/down to the given position.
   // -0.025 is "up all the way" and 0.001 is down as much as it can
   public static void liftLowerGripper(float position) {
@@ -89,8 +90,9 @@ public class ProjectController2 {
   private static double cos(double angle) {
     return Math.cos(Math.toRadians(angle));
   }
-	  
-  // This method checks whether distance between two doorway points is ≥ 70cm and ≤ 110cm
+
+  // This method checks whether distance between two doorway points is ≥ 70cm and
+  // ≤ 110cm
   private static boolean isDoorway(int x1, int y1, int x2, int y2) {
     double distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     return distance >= 70 && distance <= 110;
@@ -100,22 +102,24 @@ public class ProjectController2 {
   private static int getCompassReadingInDegrees() {
     double compassReadings[] = compass.getValues();
     double rad = Math.atan2(compassReadings[0], compassReadings[1]);
-    double bearing = (rad - Math.PI/2) / Math.PI * 180.0;
+    double bearing = (rad - Math.PI / 2) / Math.PI * 180.0;
     if (bearing > 360)
       bearing = 360 - bearing;
     if (bearing < 0)
       bearing = 360 + bearing;
     // if (bearing > 180)
-    //   bearing = 360 - bearing;
+    // bearing = 360 - bearing;
     // if (bearing < -180)
-    //   bearing = 360 + bearing;
-    return (int)(bearing);
+    // bearing = 360 + bearing;
+    return (int) (bearing);
   }
 
   private static byte alignTo(int bearing) {
     int currentBearing = getCompassReadingInDegrees();
-    if (currentBearing < bearing - COMPASS_THRESH) return SPIN_LEFT;
-    if (currentBearing > bearing + COMPASS_THRESH) return SPIN_RIGHT;
+    if (currentBearing < bearing - COMPASS_THRESH)
+      return SPIN_LEFT;
+    if (currentBearing > bearing + COMPASS_THRESH)
+      return SPIN_RIGHT;
     return STOP;
   }
 
@@ -126,17 +130,17 @@ public class ProjectController2 {
   }
 
   private static boolean isGreen(int red, int green, int blue) {
-    return (red < 100) && (green > 60) && (blue < 100);
+    return (red < 150) && (green > 100) && (blue < 150);
   }
-  
-  //#endregion
-  
+
+  // #endregion
+
   // This is where it all begins
   public static void main(String[] args) {
-    //#region
+    // #region
     robot = new Robot();
     int timeStep = (int) Math.round(robot.getBasicTimeStep());
-    
+
     // Set up the motors
     leftMotor = robot.getMotor("left wheel");
     rightMotor = robot.getMotor("right wheel");
@@ -146,96 +150,96 @@ public class ProjectController2 {
     leftMotor.setPosition(Double.POSITIVE_INFINITY);
     rightMotor.setPosition(Double.POSITIVE_INFINITY);
     leftMotor.setVelocity(0);
-    rightMotor.setVelocity(0); 
-    
+    rightMotor.setVelocity(0);
+
     // Get and enable the distance sensors
-    leftSideSensor = robot.getDistanceSensor("so0"); 
-    leftAngledSensor = robot.getDistanceSensor("so1"); 
-    leftAheadSensor = robot.getDistanceSensor("so3"); 
-    rightAheadSensor = robot.getDistanceSensor("so4"); 
-    rightAngledSensor = robot.getDistanceSensor("so6"); 
-    rightSideSensor = robot.getDistanceSensor("so7"); 
+    leftSideSensor = robot.getDistanceSensor("so0");
+    leftAngledSensor = robot.getDistanceSensor("so1");
+    leftAheadSensor = robot.getDistanceSensor("so3");
+    rightAheadSensor = robot.getDistanceSensor("so4");
+    rightAngledSensor = robot.getDistanceSensor("so6");
+    rightSideSensor = robot.getDistanceSensor("so7");
     leftAheadSensor.enable(timeStep);
     rightAheadSensor.enable(timeStep);
     leftAngledSensor.enable(timeStep);
     rightAngledSensor.enable(timeStep);
     leftSideSensor.enable(timeStep);
     rightSideSensor.enable(timeStep);
-    
+
     // Prepare the accelerometer
     accelerometer = new Accelerometer("accelerometer");
     accelerometer.enable(timeStep);
-    
+
     // Prepare the camera
     camera = new Camera("camera");
     camera.enable(timeStep);
-    
+
     // Prepare the Compass sensor
     compass = robot.getCompass("compass");
     compass.enable(timeStep);
-    
+
     // Prepare the jar detecting sensor
     jarDetectedSensor = new TouchSensor("touch sensor");
     jarDetectedSensor.enable(timeStep);
-    
-    //  Prepare the Lidar sensor
+
+    // Prepare the Lidar sensor
     Lidar lidar = new Lidar("Sick LMS 291");
     lidar.enable(timeStep);
     float lidarValues[] = null;
-    //#endregion
-      
+    // #endregion
+
     // Run the robot
     openCloseGripper(0.099f);
     delay(1000, timeStep);
-    
+
     while (robot.step(timeStep) != -1) {
       // SENSE: Read the sensors
       lidarValues = lidar.getRangeImage();
       forwardDistance = lidarValues[89] * 100;
 
       {
-      // // Lidar
-      // final int ADJACENCY_TOLERANCE = 15; //cm
-      // int leftDoorwayAngle, rightDoorwayAngle;
-      // leftDoorwayAngle = rightDoorwayAngle = -1;
+        // // Lidar
+        // final int ADJACENCY_TOLERANCE = 15; //cm
+        // int leftDoorwayAngle, rightDoorwayAngle;
+        // leftDoorwayAngle = rightDoorwayAngle = -1;
 
-      // // Find left doorway gap
-      // for (int i = 0; i < lidarValues.length - 1; i++) {
-      //   double rangeCM = lidarValues[i] * 100;
-      //   double nextRangeCM = lidarValues[i + 1] * 100;
-      //   if (Math.abs(rangeCM - nextRangeCM) > ADJACENCY_TOLERANCE) {
-      //     leftDoorwayAngle = getCompassReadingInDegrees() + 90 - i;
-      //     break;
-      //   }
-      // }
+        // // Find left doorway gap
+        // for (int i = 0; i < lidarValues.length - 1; i++) {
+        // double rangeCM = lidarValues[i] * 100;
+        // double nextRangeCM = lidarValues[i + 1] * 100;
+        // if (Math.abs(rangeCM - nextRangeCM) > ADJACENCY_TOLERANCE) {
+        // leftDoorwayAngle = getCompassReadingInDegrees() + 90 - i;
+        // break;
+        // }
+        // }
 
-      // // Find right doorway gap
-      // for (int i = lidarValues.length - 1; i > 0; i--) {
-      //   double rangeCM = lidarValues[i] * 100;
-      //   double prevRangeCM = lidarValues[i - 1] * 100;
-      //   if (Math.abs(rangeCM - prevRangeCM) > ADJACENCY_TOLERANCE) {
-      //     rightDoorwayAngle = getCompassReadingInDegrees() + 90 - i;
-      //     break;
-      //   }
-      // }
+        // // Find right doorway gap
+        // for (int i = lidarValues.length - 1; i > 0; i--) {
+        // double rangeCM = lidarValues[i] * 100;
+        // double prevRangeCM = lidarValues[i - 1] * 100;
+        // if (Math.abs(rangeCM - prevRangeCM) > ADJACENCY_TOLERANCE) {
+        // rightDoorwayAngle = getCompassReadingInDegrees() + 90 - i;
+        // break;
+        // }
+        // }
 
-      // int averageAngle = (leftDoorwayAngle + rightDoorwayAngle) / 2;
-      // System.out.println(averageAngle);
+        // int averageAngle = (leftDoorwayAngle + rightDoorwayAngle) / 2;
+        // System.out.println(averageAngle);
 
-      // Find max value of lidar values
-      // double max = 0;
-      // int maxIndex = 0;
-      // for (int i = 0; i < lidarValues.length; i++) {
-      //   if (lidarValues[i] > max) {
-      //     max = lidarValues[i];
-      //     maxIndex = i;
-      //   }
-      // }
-      // System.out.println(maxIndex);
+        // Find max value of lidar values
+        // double max = 0;
+        // int maxIndex = 0;
+        // for (int i = 0; i < lidarValues.length; i++) {
+        // if (lidarValues[i] > max) {
+        // max = lidarValues[i];
+        // maxIndex = i;
+        // }
+        // }
+        // System.out.println(maxIndex);
 
-      // final int LOW_THRESH = 80;
-      // final int HIGH_THRESH = 100;
-      // final int RELEASE = 0;
+        // final int LOW_THRESH = 80;
+        // final int HIGH_THRESH = 100;
+        // final int RELEASE = 0;
       }
 
       // THINK: Make a decision as to what MODE to be in
@@ -250,7 +254,7 @@ public class ProjectController2 {
           currentMode = step2();
           break;
       }
-           
+
       // REACT: Move motors accordingly
       System.out.println(MODE_NAMES[currentMode]);
       switch (currentMode) {
@@ -295,8 +299,9 @@ public class ProjectController2 {
   }
 
   private static byte step0() {
-    if (!checkBearing(270)) return alignTo(270);
-    
+    if (!checkBearing(270))
+      return alignTo(270);
+
     if (forwardDistance <= 100) {
       step = 1;
       return STOP;
@@ -305,7 +310,8 @@ public class ProjectController2 {
   }
 
   private static byte step1() {
-    if (!checkBearing(185)) return alignTo(185);
+    if (!checkBearing(190))
+      return alignTo(190);
 
     step = 2;
     return STOP;
@@ -320,7 +326,9 @@ public class ProjectController2 {
     int r, g, b = 0;
 
     int Y_SCAN_OFFSET = 15;
-    for (int yLvl = CAMERA_HEIGHT / 2 - Y_SCAN_OFFSET; yLvl < CAMERA_HEIGHT / 2 + Y_SCAN_OFFSET; yLvl++)
+    // int yLvl = CAMERA_HEIGHT / 2;
+    for (int yLvl = CAMERA_HEIGHT / 2 - Y_SCAN_OFFSET; yLvl < CAMERA_HEIGHT / 2 +
+        Y_SCAN_OFFSET; yLvl++) {
       for (int x = 0; x < CAMERA_WIDTH; x++) {
         r = Camera.imageGetRed(image, CAMERA_WIDTH, x, yLvl);
         g = Camera.imageGetGreen(image, CAMERA_WIDTH, x, yLvl);
@@ -334,6 +342,7 @@ public class ProjectController2 {
             centerCount++;
         }
       }
+    }
 
     boolean detectedLeft = leftCount > (rightCount + CAM_THRESH);
     boolean detectedRight = rightCount > (leftCount + CAM_THRESH);
@@ -355,13 +364,17 @@ public class ProjectController2 {
       return STOP;
     }
 
-    if (notDetected) return STOP;
+    // if (notDetected) {
+    // return STOP;
+    // }
 
-    if (detectedLeft) return CURVE_LEFT;
-    if (detectedRight) return CURVE_RIGHT;
-    if (detectedCenter) return STRAIGHT_SLOW;
+    if (detectedLeft)
+      return CURVE_LEFT;
+    if (detectedRight)
+      return CURVE_RIGHT;
+    if (detectedCenter || notDetected)
+      return STRAIGHT_SLOW;
 
     return STOP;
   }
 }
-
