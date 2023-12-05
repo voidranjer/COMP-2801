@@ -16,8 +16,11 @@ public class ProjectController2 {
   private static final byte     CAMERA_WIDTH = 64;
   private static final byte     CAMERA_HEIGHT = 64;
   private static final double   GRIPPER_MOTOR_MAX_SPEED = 0.1;
-  private static final double   MAX_SPEED = 12.3; // maximum speed of the epuck robot
+  
+  // CUSTOM
+  private static final double   MAX_SPEED = 12.3;
   private static final double   COMPASS_THRESH = 1; // degrees
+  private static final double   CAM_THRESH = 10;
   
   // Various modes for the robot to be in
   private static final byte STRAIGHT  = 0;
@@ -28,7 +31,8 @@ public class ProjectController2 {
   private static final byte PIVOT_LEFT  = 5;
   private static final byte PIVOT_RIGHT  = 6;
   private static final byte STOP  = 7;
-  private static final String[] MODE_NAMES = {"STRAIGHT", "SPIN_LEFT", "SPIN_RIGHT", "CURVE_LEFT", "CURVE_RIGHT", "PIVOT_LEFT", "PIVOT_RIGHT", "STOP"};
+  private static final byte STRAIGHT_SLOW  = 8;
+  private static final String[] MODE_NAMES = {"STRAIGHT", "SPIN_LEFT", "SPIN_RIGHT", "CURVE_LEFT", "CURVE_RIGHT", "PIVOT_LEFT", "PIVOT_RIGHT", "STOP", "STRAIGHT_SLOW"};
   
   private static Robot           robot;
   private static Motor           leftMotor;
@@ -51,6 +55,8 @@ public class ProjectController2 {
   private static double          forwardDistance;
   private static int             step = 0;
   
+  //#region
+
   // Wait for a certain number of milliseconds
   private static void delay(int milliseconds, int timeStep) {
     int elapsedTime = 0;
@@ -119,25 +125,15 @@ public class ProjectController2 {
     return currentBearing >= bearing - COMPASS_THRESH && currentBearing <= bearing + COMPASS_THRESH;
   }
 
-  private static byte step0() {
-    if (!checkBearing(270)) return alignTo(270);
-    
-    if (forwardDistance <= 100) {
-      step = 1;
-      return STOP;
-    }
-    return STRAIGHT;
+  private static boolean isGreen(int red, int green, int blue) {
+    return (red < 100) && (green > 60) && (blue < 100);
   }
-
-  private static byte step1() {
-    if (!checkBearing(185)) return alignTo(185);
-
-    step = 2;
-    return STOP;
-  }
-
+  
+  //#endregion
+  
   // This is where it all begins
   public static void main(String[] args) {
+    //#region
     robot = new Robot();
     int timeStep = (int) Math.round(robot.getBasicTimeStep());
     
@@ -186,13 +182,18 @@ public class ProjectController2 {
     Lidar lidar = new Lidar("Sick LMS 291");
     lidar.enable(timeStep);
     float lidarValues[] = null;
+    //#endregion
       
-    // Run the robot   
+    // Run the robot
+    openCloseGripper(0.099f);
+    delay(1000, timeStep);
+    
     while (robot.step(timeStep) != -1) {
       // SENSE: Read the sensors
       lidarValues = lidar.getRangeImage();
       forwardDistance = lidarValues[89] * 100;
 
+      {
       // // Lidar
       // final int ADJACENCY_TOLERANCE = 15; //cm
       // int leftDoorwayAngle, rightDoorwayAngle;
@@ -235,6 +236,7 @@ public class ProjectController2 {
       // final int LOW_THRESH = 80;
       // final int HIGH_THRESH = 100;
       // final int RELEASE = 0;
+      }
 
       // THINK: Make a decision as to what MODE to be in
       switch (step) {
@@ -243,6 +245,9 @@ public class ProjectController2 {
           break;
         case 1:
           currentMode = step1();
+          break;
+        case 2:
+          currentMode = step2();
           break;
       }
            
@@ -254,12 +259,12 @@ public class ProjectController2 {
           rightMotor.setVelocity(MAX_SPEED);
           break;
         case SPIN_LEFT:
-          leftMotor.setVelocity(-1 * MAX_SPEED);
-          rightMotor.setVelocity(MAX_SPEED);
+          leftMotor.setVelocity(-1 * MAX_SPEED * 0.1);
+          rightMotor.setVelocity(MAX_SPEED * 0.1);
           break;
         case SPIN_RIGHT:
-          leftMotor.setVelocity(MAX_SPEED);
-          rightMotor.setVelocity(-1 * MAX_SPEED);
+          leftMotor.setVelocity(MAX_SPEED * 0.1);
+          rightMotor.setVelocity(-1 * MAX_SPEED * 0.1);
           break;
         case PIVOT_LEFT:
           leftMotor.setVelocity(-1 * MAX_SPEED);
@@ -270,12 +275,16 @@ public class ProjectController2 {
           rightMotor.setVelocity(-1 * MAX_SPEED);
           break;
         case CURVE_LEFT:
-          leftMotor.setVelocity(0.75 * MAX_SPEED);
+          leftMotor.setVelocity(0.75 * MAX_SPEED * 0.1);
           rightMotor.setVelocity(MAX_SPEED);
           break;
         case CURVE_RIGHT:
           leftMotor.setVelocity(MAX_SPEED);
-          rightMotor.setVelocity(0.75 * MAX_SPEED);
+          rightMotor.setVelocity(0.75 * MAX_SPEED * 0.1);
+          break;
+        case STRAIGHT_SLOW:
+          leftMotor.setVelocity(MAX_SPEED * 0.1);
+          rightMotor.setVelocity(MAX_SPEED * 0.1);
           break;
         default:
           leftMotor.setVelocity(0);
@@ -284,4 +293,75 @@ public class ProjectController2 {
       }
     }
   }
+
+  private static byte step0() {
+    if (!checkBearing(270)) return alignTo(270);
+    
+    if (forwardDistance <= 100) {
+      step = 1;
+      return STOP;
+    }
+    return STRAIGHT;
+  }
+
+  private static byte step1() {
+    if (!checkBearing(185)) return alignTo(185);
+
+    step = 2;
+    return STOP;
+  }
+
+  private static byte step2() {
+    int[] image = camera.getImage();
+
+    int leftCount = 0;
+    int rightCount = 0;
+    int centerCount = 0;
+    int r, g, b = 0;
+
+    int Y_SCAN_OFFSET = 15;
+    for (int yLvl = CAMERA_HEIGHT / 2 - Y_SCAN_OFFSET; yLvl < CAMERA_HEIGHT / 2 + Y_SCAN_OFFSET; yLvl++)
+      for (int x = 0; x < CAMERA_WIDTH; x++) {
+        r = Camera.imageGetRed(image, CAMERA_WIDTH, x, yLvl);
+        g = Camera.imageGetGreen(image, CAMERA_WIDTH, x, yLvl);
+        b = Camera.imageGetBlue(image, CAMERA_WIDTH, x, yLvl);
+        if (isGreen(r, g, b)) {
+          if (x < CAMERA_WIDTH / 3)
+            leftCount++;
+          else if (x > CAMERA_WIDTH * 2 / 3)
+            rightCount++;
+          else
+            centerCount++;
+        }
+      }
+
+    boolean detectedLeft = leftCount > (rightCount + CAM_THRESH);
+    boolean detectedRight = rightCount > (leftCount + CAM_THRESH);
+    boolean detectedCenter = centerCount > 350;
+    // boolean detectedCenter = centerCount > (leftCount + CAM_THRESH) &&
+    // centerCount > (rightCount + CAM_THRESH);
+    boolean notDetected = !detectedLeft && !detectedCenter && !detectedRight;
+
+    if (jarDetectedSensor.getValue() == 1) {
+      // openCloseGripper(0.01f);
+      // delay(1000, timeStep);
+      // liftLowerGripper(-0.025f);
+      // delay(1000, timeStep);
+      // openCloseGripper(0.099f);
+      // delay(1000, timeStep);
+      // liftLowerGripper(0.001f);
+      // delay(1000, timeStep);
+      step = 3;
+      return STOP;
+    }
+
+    if (notDetected) return STOP;
+
+    if (detectedLeft) return CURVE_LEFT;
+    if (detectedRight) return CURVE_RIGHT;
+    if (detectedCenter) return STRAIGHT_SLOW;
+
+    return STOP;
+  }
 }
+
