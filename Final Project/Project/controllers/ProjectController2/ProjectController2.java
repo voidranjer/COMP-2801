@@ -33,8 +33,9 @@ public class ProjectController2 {
   private static final byte PIVOT_RIGHT = 6;
   private static final byte STOP = 7;
   private static final byte STRAIGHT_SLOW = 8;
+  private static final byte LIDAR = 9;
   private static final String[] MODE_NAMES = { "STRAIGHT", "SPIN_LEFT", "SPIN_RIGHT", "CURVE_LEFT", "CURVE_RIGHT",
-      "PIVOT_LEFT", "PIVOT_RIGHT", "STOP", "STRAIGHT_SLOW" };
+      "PIVOT_LEFT", "PIVOT_RIGHT", "STOP", "STRAIGHT_SLOW", "LIDAR" };
 
   private static Robot robot;
   private static Motor leftMotor;
@@ -53,10 +54,11 @@ public class ProjectController2 {
   private static Accelerometer accelerometer;
   private static Camera camera;
 
-  private static byte currentMode;
+  private static byte currentMode = LIDAR;
   private static double forwardDistance;
   private static int timeStep = 0;
   private static int step = 0;
+  private static float lidarValues[] = null;
 
   // Wait for a certain number of milliseconds
   private static void delay(int milliseconds) {
@@ -103,14 +105,14 @@ public class ProjectController2 {
     double compassReadings[] = compass.getValues();
     double rad = Math.atan2(compassReadings[0], compassReadings[1]);
     double bearing = (rad - Math.PI / 2) / Math.PI * 180.0;
-    if (bearing > 360)
-      bearing = 360 - bearing;
-    if (bearing < 0)
-      bearing = 360 + bearing;
-    // if (bearing > 180)
+    // if (bearing > 360)
     // bearing = 360 - bearing;
-    // if (bearing < -180)
+    // if (bearing < 0)
     // bearing = 360 + bearing;
+    if (bearing > 180)
+      bearing = 360 - bearing;
+    if (bearing < -180)
+      bearing = 360 + bearing;
     return (int) (bearing);
   }
 
@@ -132,6 +134,25 @@ public class ProjectController2 {
 
   private static boolean isGreen(int red, int green, int blue) {
     return (red < 150) && (green > 100) && (blue < 150);
+  }
+
+  private static void moveFrom(double x1, double y1, double x2, double y2) {
+    double xDiff = x2 - x1;
+    double yDiff = y2 - y1;
+    double turn = Math.atan2(yDiff, xDiff) * 180 / Math.PI;
+    turn = (turn - getCompassReadingInDegrees()) % 360;
+    if (turn < -180)
+      turn += 360;
+    else if (turn > 180)
+      turn -= 360;
+
+    if (turn > 0) {
+      leftMotor.setVelocity((int) (MAX_SPEED * ((90 - turn) / 90.0) * 0.85));
+      rightMotor.setVelocity(MAX_SPEED);
+    } else {// if (turn < -10) {
+      leftMotor.setVelocity(MAX_SPEED);
+      rightMotor.setVelocity((int) (MAX_SPEED * ((90 + turn) / 90.0) * 0.85));
+    }
   }
 
   // #endregion
@@ -186,7 +207,6 @@ public class ProjectController2 {
     // Prepare the Lidar sensor
     Lidar lidar = new Lidar("Sick LMS 291");
     lidar.enable(timeStep);
-    float lidarValues[] = null;
     // #endregion
 
     // Run the robot
@@ -194,81 +214,37 @@ public class ProjectController2 {
     while (robot.step(timeStep) != -1) {
       // SENSE: Read the sensors
       lidarValues = lidar.getRangeImage();
-      forwardDistance = lidarValues[89] * 100;
 
-      {
-        // // Lidar
-        // final int ADJACENCY_TOLERANCE = 15; //cm
-        // int leftDoorwayAngle, rightDoorwayAngle;
-        // leftDoorwayAngle = rightDoorwayAngle = -1;
-
-        // // Find left doorway gap
-        // for (int i = 0; i < lidarValues.length - 1; i++) {
-        // double rangeCM = lidarValues[i] * 100;
-        // double nextRangeCM = lidarValues[i + 1] * 100;
-        // if (Math.abs(rangeCM - nextRangeCM) > ADJACENCY_TOLERANCE) {
-        // leftDoorwayAngle = getCompassReadingInDegrees() + 90 - i;
-        // break;
-        // }
-        // }
-
-        // // Find right doorway gap
-        // for (int i = lidarValues.length - 1; i > 0; i--) {
-        // double rangeCM = lidarValues[i] * 100;
-        // double prevRangeCM = lidarValues[i - 1] * 100;
-        // if (Math.abs(rangeCM - prevRangeCM) > ADJACENCY_TOLERANCE) {
-        // rightDoorwayAngle = getCompassReadingInDegrees() + 90 - i;
-        // break;
-        // }
-        // }
-
-        // int averageAngle = (leftDoorwayAngle + rightDoorwayAngle) / 2;
-        // System.out.println(averageAngle);
-
-        // Find max value of lidar values
-        // double max = 0;
-        // int maxIndex = 0;
-        // for (int i = 0; i < lidarValues.length; i++) {
-        // if (lidarValues[i] > max) {
-        // max = lidarValues[i];
-        // maxIndex = i;
-        // }
-        // }
-        // System.out.println(maxIndex);
-
-        // final int LOW_THRESH = 80;
-        // final int HIGH_THRESH = 100;
-        // final int RELEASE = 0;
-      }
-
+      // #region
       // THINK: Make a decision as to what MODE to be in
-      switch (step) {
-        case 0: // Go to bottom
-          currentMode = hallwayStep(270, 100, 1);
-          break;
-        case 1: // Turn towards window
-          currentMode = hallwayStep(190, Integer.MAX_VALUE, 2);
-          break;
-        case 2: // Home into jar and pick up jar
-          currentMode = step2();
-          break;
-        case 3: // Reverse gear back to bottom center position
-          currentMode = step3();
-          break;
-        case 4: // First hallway
-          currentMode = hallwayStep(90, 150, 5);
-          break;
-        case 5: // second hallway
-          currentMode = hallwayStep(1, 100, 6);
-          break;
-        case 6: // third hallway
-          currentMode = hallwayStep(270, 120, 7);
-          break;
-        case 7: // fourth hallway
-          currentMode = hallwayStep(1, 100, 8);
-          break;
+      // switch (step) {
+      // case 0: // Go to bottom
+      // currentMode = hallwayStep(270, 100, 1);
+      // break;
+      // case 1: // Turn towards window
+      // currentMode = hallwayStep(190, Integer.MAX_VALUE, 2);
+      // break;
+      // case 2: // Home into jar and pick up jar
+      // currentMode = step2();
+      // break;
+      // case 3: // Reverse gear back to bottom center position
+      // currentMode = step3();
+      // break;
+      // case 4: // First hallway
+      // currentMode = hallwayStep(90, 150, 5);
+      // break;
+      // case 5: // second hallway
+      // currentMode = hallwayStep(1, 100, 6);
+      // break;
+      // case 6: // third hallway
+      // currentMode = hallwayStep(270, 120, 7);
+      // break;
+      // case 7: // fourth hallway
+      // currentMode = hallwayStep(1, 100, 8);
+      // break;
 
-      }
+      // }
+      // #endregion
 
       // REACT: Move motors accordingly
       System.out.println(MODE_NAMES[currentMode]);
@@ -305,12 +281,34 @@ public class ProjectController2 {
           leftMotor.setVelocity(MAX_SPEED * 0.1);
           rightMotor.setVelocity(MAX_SPEED * 0.1);
           break;
-        default:
+        case STOP:
           leftMotor.setVelocity(0);
           rightMotor.setVelocity(0);
           break;
+        case LIDAR:
+          lidarGuided();
+          break;
+        default:
+          break;
       }
     }
+  }
+
+  // #region
+  private static byte lidarGuided() {
+    double centerX, centerY;
+    centerX = centerY = 0;
+    for (int i = 0; i < lidarValues.length; i++) {
+      double d = lidarValues[i] * 100;
+      double px = d * cos(getCompassReadingInDegrees() + 90 - i);
+      double py = d * sin(getCompassReadingInDegrees() + 90 - i);
+      centerX += px;
+      centerY += py;
+    }
+    centerX /= lidarValues.length;
+    centerY /= lidarValues.length;
+    moveFrom(0, 0, centerX, centerY);
+    return LIDAR;
   }
 
   private static byte step0() {
@@ -401,5 +399,5 @@ public class ProjectController2 {
     step = 4;
     return STOP;
   }
-
+  // #endregion
 }
