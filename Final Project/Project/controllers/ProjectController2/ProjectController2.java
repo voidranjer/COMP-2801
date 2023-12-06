@@ -36,9 +36,9 @@ public class ProjectController2 {
   private static final byte LIDAR = 9;
   private static final byte HOME_IN_BLUE = 10;
   private static final byte HOME_IN_GREEN = 11;
-  private static final byte FACE_EAST = 12;
+  private static final byte TURN_BACK = 12;
   private static final String[] MODE_NAMES = { "STRAIGHT", "SPIN_LEFT", "SPIN_RIGHT", "CURVE_LEFT", "CURVE_RIGHT",
-      "PIVOT_LEFT", "PIVOT_RIGHT", "STOP", "STRAIGHT_SLOW", "LIDAR", "HOME_IN_BLUE", "HOME_IN_GREEN", "FACE_EAST" };
+      "PIVOT_LEFT", "PIVOT_RIGHT", "STOP", "STRAIGHT_SLOW", "LIDAR", "HOME_IN_BLUE", "HOME_IN_GREEN", "TURN_BACK" };
 
   private static Robot robot;
   private static Motor leftMotor;
@@ -139,7 +139,7 @@ public class ProjectController2 {
     if (color == "green")
       return (red < 150) && (green > 100) && (blue < 150);
     if (color == "blue")
-      return (red < 100) && (green < 100) && (blue > 180);
+      return (red < 100) && (green < 100) && (blue > 170);
     return false;
   }
 
@@ -222,15 +222,6 @@ public class ProjectController2 {
       // SENSE: Read the sensors
       lidarValues = lidar.getRangeImage();
 
-      // config
-      final int STOP_THRESH = 70;
-      double minDistanceFront = Double.MAX_VALUE;
-      for (int i = 50; i < 130; i++) {
-        double d = lidarValues[i] * 100;
-        if (d < minDistanceFront)
-          minDistanceFront = d;
-      }
-
       // #region
       // THINK: Make a decision as to what MODE to be in
       // switch (step) {
@@ -265,17 +256,17 @@ public class ProjectController2 {
       // THINK
       switch (currentMode) {
         case LIDAR:
-          if (detectColor("blue") != "NONE" && !hasPayload)
+          if (detectColor("blue") != "NONE")
             currentMode = HOME_IN_BLUE;
           break;
         case HOME_IN_BLUE:
-          currentMode = homeInBlue();
+          currentMode = homeInBlue(lidarValues);
           break;
         case HOME_IN_GREEN:
           currentMode = homeInGreen();
           break;
-        case FACE_EAST:
-          if (bearingPasses(0))
+        case TURN_BACK:
+          if (bearingPasses(90))
             currentMode = LIDAR;
           break;
         case STOP:
@@ -332,9 +323,9 @@ public class ProjectController2 {
         case HOME_IN_GREEN:
           // handled by homeInGreen
           break;
-        case FACE_EAST:
-          leftMotor.setVelocity(-1 * MAX_SPEED * 0.1);
-          rightMotor.setVelocity(MAX_SPEED * 0.1);
+        case TURN_BACK:
+          leftMotor.setVelocity(MAX_SPEED * 0.1);
+          rightMotor.setVelocity(-1 * MAX_SPEED * 0.1);
           break;
         default:
           break;
@@ -399,14 +390,39 @@ public class ProjectController2 {
     if (detectedRight)
       return "RIGHT";
     return "NONE";
-
   }
 
-  private static byte homeInBlue() {
+  private static void homeMotors(String pos, double speedFactor) {
+    if (pos == "NONE") {
+      leftMotor.setVelocity(MAX_SPEED * 0.5);
+      rightMotor.setVelocity(-MAX_SPEED * 0.5);
+    }
+    if (pos == "CENTER") {
+      leftMotor.setVelocity(MAX_SPEED * speedFactor);
+      rightMotor.setVelocity(MAX_SPEED * speedFactor);
+    }
+    if (pos == "LEFT") {
+      leftMotor.setVelocity(-1 * MAX_SPEED * 0.1);
+      rightMotor.setVelocity(MAX_SPEED * 0.1);
+    }
+    if (pos == "RIGHT") {
+      leftMotor.setVelocity(MAX_SPEED * 0.1);
+      rightMotor.setVelocity(-1 * MAX_SPEED * 0.1);
+    }
+  }
+
+  private static byte homeInBlue(float[] lidarValues) {
+    final double STOP_THRESH = 70.0 / 100; // m
+    boolean frontCollide = leftAheadSensor.getValue() <= STOP_THRESH || rightAheadSensor.getValue() <= STOP_THRESH;
     String pos = detectColor("blue");
-    if (pos == "NONE")
-      return HOME_IN_GREEN;
-    homeMotors(pos, 1);
+    if (pos == "NONE" || frontCollide) {
+      if (!hasPayload) {
+        return HOME_IN_GREEN;
+      } else {
+        return STOP;
+      }
+    }
+    homeMotors(pos, 0.5);
     return HOME_IN_BLUE;
   }
 
@@ -420,30 +436,14 @@ public class ProjectController2 {
       liftLowerGripper(-0.025f);
       delay(1000);
       hasPayload = true;
-      return FACE_EAST;
+      leftMotor.setVelocity(-1 * MAX_SPEED * 0.3);
+      rightMotor.setVelocity(-1 * MAX_SPEED * 0.3);
+      delay(2000);
+      return TURN_BACK;
     }
 
     homeMotors(pos, 0.3);
     return HOME_IN_GREEN;
-  }
-
-  private static void homeMotors(String pos, double speedFactor) {
-    if (pos == "NONE") {
-      leftMotor.setVelocity(MAX_SPEED * 0.5);
-      rightMotor.setVelocity(-MAX_SPEED * 0.5);
-    }
-    if (pos == "CENTER") {
-      leftMotor.setVelocity(MAX_SPEED * speedFactor);
-      rightMotor.setVelocity(MAX_SPEED * speedFactor);
-    }
-    if (pos == "LEFT") {
-      leftMotor.setVelocity(-1 * MAX_SPEED * 0.5);
-      rightMotor.setVelocity(MAX_SPEED * 0.5);
-    }
-    if (pos == "RIGHT") {
-      leftMotor.setVelocity(MAX_SPEED * 0.5);
-      rightMotor.setVelocity(-1 * MAX_SPEED * 0.5);
-    }
   }
   // #endregion
 }
