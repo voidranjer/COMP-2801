@@ -18,8 +18,8 @@ WorldInfo {
   coordinateSystem "NUE"
 }
 Viewpoint {
-  orientation -0.7071057814660382 0.7071077809056435 5.551115123136879e-17 3.1415966524690035
-  position -0.08396009703930815 33.685067146085395 7.757042473149387
+  orientation 0.7071057814660382 -0.7071077809056435 -5.551115123136879e-17 3.1415886547105827
+  position 1.68303670360821 20.958220734074548 5.88350779857706
   follow "Pioneer 3-DX - 1"
   followType "None"
 }
@@ -544,18 +544,6 @@ Wall {
   size 0.2 4 2
 }
 Wall {
-  translation -0.15003 0.32 9.29992
-  rotation -1.2986841950112875e-06 -0.7071067811859513 -0.7071067811859513 3.141590056252852
-  name "wall(19)"
-  size 0.05 1 1
-  appearance Roughcast {
-    colorOverride 0 0 1
-    textureTransform TextureTransform {
-      scale 1 2.4
-    }
-  }
-}
-Wall {
   translation 1.86997 0.32 9.78992
   rotation -0.5773530968242329 -0.5773488553671291 -0.577348855367129 2.0943908609464783
   name "wall(3)"
@@ -578,12 +566,6 @@ Wall {
       scale 1 2.4
     }
   }
-}
-Wall {
-  translation -0.09003 0.32 9.29992
-  rotation -1.2986841950112875e-06 -0.7071067811859513 -0.7071067811859513 3.141590056252852
-  name "wall(20)"
-  size 0.05 1 1
 }
 Wall {
   translation 4.07995 0 6.45992

@@ -433,11 +433,13 @@ public class ProjectController2 {
       rightMotor.setVelocity(0);
       openCloseGripper(0.01f);
       delay(1000);
-      liftLowerGripper(-0.025f);
-      delay(1000);
+      // liftLowerGripper(-0.025f);
+      // delay(1000);
+      // liftLowerGripper(-0.025f);
+      // delay(200);
       hasPayload = true;
-      leftMotor.setVelocity(-1 * MAX_SPEED * 0.3);
-      rightMotor.setVelocity(-1 * MAX_SPEED * 0.3);
+      leftMotor.setVelocity(-1 * MAX_SPEED * 0.1);
+      rightMotor.setVelocity(-1 * MAX_SPEED * 0.1);
       delay(2000);
       return TURN_BACK;
     }
