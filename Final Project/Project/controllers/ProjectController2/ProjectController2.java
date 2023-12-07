@@ -147,7 +147,7 @@ public class ProjectController2 {
 
   private static boolean isColor(String color, int red, int green, int blue) {
     if (color == "green")
-      return (red < 150) && (green > 100) && (blue < 150);
+      return (red < 80) && (green > 200) && (blue < 80);
     if (color == "blue")
       return (red < 100) && (green < 100) && (blue > 170);
     return false;
@@ -227,7 +227,7 @@ public class ProjectController2 {
     // #endregion
 
     // Run the robot
-    openCloseGripper(0.099f);
+    openCloseGripper(0.05f);
     liftLowerGripper(0.001f);
     while (robot.step(timeStep) != -1) {
       // SENSE: Read the sensors
@@ -375,9 +375,13 @@ public class ProjectController2 {
     boolean detectedLeft = leftCount > (rightCount + CAM_THRESH);
     boolean detectedRight = rightCount > (leftCount + CAM_THRESH);
     boolean detectedCenter = centerCount > leftCount && centerCount > rightCount;
-    // boolean detectedCenter = centerCount > (leftCount + CAM_THRESH) &&
-    // centerCount > (rightCount + CAM_THRESH);
     boolean notDetected = !detectedLeft && !detectedCenter && !detectedRight;
+
+    // Threshold for jars clustered together
+    if (!notDetected && (detectedCenter && (Math.abs(leftCount - rightCount) < CAM_THRESH))) {
+      detectedLeft = detectedRight = false;
+      detectedCenter = true;
+    }
 
     if (detectedCenter)
       return "CENTER";
@@ -429,7 +433,7 @@ public class ProjectController2 {
       rightMotor.setVelocity(0);
       delay(500);
       openCloseGripper(0.03f);
-      delay(1000);
+      delay(500);
       hasPayload = true;
       leftMotor.setVelocity(-1 * MAX_SPEED * 0.2);
       rightMotor.setVelocity(-1 * MAX_SPEED * 0.2);
@@ -441,17 +445,18 @@ public class ProjectController2 {
   }
 
   private static byte aimAndWait() {
-    if (detectColor("green") == "NONE") {
-      if (!bearingPasses(-140)) {
-        alignTo(-140);
-      } else {
-        leftMotor.setVelocity(0);
-        rightMotor.setVelocity(0);
-      }
+    leftMotor.setVelocity(0);
+    rightMotor.setVelocity(0);
+    if (!bearingPasses(-140)) {
+      alignTo(-140);
       return AIM_AND_WAIT;
     }
-    delay(2000);
-    return HOME_IN_GREEN;
+    if (detectColor("green") != "NONE") {
+      delay(2000);
+      return HOME_IN_GREEN;
+    }
+
+    return AIM_AND_WAIT;
   }
 
   private static byte dropOff() {
@@ -470,7 +475,7 @@ public class ProjectController2 {
       delay(500);
       leftMotor.setVelocity(0);
       rightMotor.setVelocity(0);
-      openCloseGripper(0.099f);
+      openCloseGripper(0.05f);
       delay(500);
       leftMotor.setVelocity(-MAX_SPEED);
       rightMotor.setVelocity(-MAX_SPEED);
