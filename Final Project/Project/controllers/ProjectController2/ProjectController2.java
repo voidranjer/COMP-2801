@@ -37,8 +37,10 @@ public class ProjectController2 {
   private static final byte HOME_IN_BLUE = 10;
   private static final byte HOME_IN_GREEN = 11;
   private static final byte TURN_BACK = 12;
+  private static final byte DROP_OFF = 13;
   private static final String[] MODE_NAMES = { "STRAIGHT", "SPIN_LEFT", "SPIN_RIGHT", "CURVE_LEFT", "CURVE_RIGHT",
-      "PIVOT_LEFT", "PIVOT_RIGHT", "STOP", "STRAIGHT_SLOW", "LIDAR", "HOME_IN_BLUE", "HOME_IN_GREEN", "TURN_BACK" };
+      "PIVOT_LEFT", "PIVOT_RIGHT", "STOP", "STRAIGHT_SLOW", "LIDAR", "HOME_IN_BLUE", "HOME_IN_GREEN", "TURN_BACK",
+      "DROP_OFF" };
 
   private static Robot robot;
   private static Motor leftMotor;
@@ -99,8 +101,10 @@ public class ProjectController2 {
   // This method checks whether distance between two doorway points is ≥ 70cm and
   // ≤ 110cm
   private static boolean isDoorway(int x1, int y1, int x2, int y2) {
+    final int DOORWAY_MIN = 450;
+    final int DOORWAY_MAX = 550;
     double distance = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-    return distance >= 70 && distance <= 110;
+    return distance >= DOORWAY_MIN && distance <= DOORWAY_MAX;
   }
 
   // Read the compass
@@ -119,15 +123,20 @@ public class ProjectController2 {
     return (int) (bearing);
   }
 
-  private static byte alignTo(int bearing) {
-    int currentBearing = getCompassReadingInDegrees();
-    if (currentBearing < bearing - COMPASS_THRESH) {
-      return SPIN_LEFT;
+  private static void alignTo(int bearing) {
+    int turn = (bearing - getCompassReadingInDegrees()) % 360;
+    if (turn < -180)
+      turn += 360;
+    else if (turn > 180)
+      turn -= 360;
+
+    if (turn > 0) {
+      leftMotor.setVelocity(-1 * MAX_SPEED * 0.1);
+      rightMotor.setVelocity(MAX_SPEED * 0.1);
+    } else {// if (turn < -10) {
+      leftMotor.setVelocity(MAX_SPEED * 0.1);
+      rightMotor.setVelocity(-1 * MAX_SPEED * 0.1);
     }
-    if (currentBearing > bearing + COMPASS_THRESH) {
-      return SPIN_RIGHT;
-    }
-    return STOP;
   }
 
   private static boolean bearingPasses(int bearing) {
@@ -222,37 +231,6 @@ public class ProjectController2 {
       // SENSE: Read the sensors
       lidarValues = lidar.getRangeImage();
 
-      // #region
-      // THINK: Make a decision as to what MODE to be in
-      // switch (step) {
-      // case 0: // Go to bottom
-      // currentMode = hallwayStep(270, 100, 1);
-      // break;
-      // case 1: // Turn towards window
-      // currentMode = hallwayStep(190, Integer.MAX_VALUE, 2);
-      // break;
-      // case 2: // Home into jar and pick up jar
-      // currentMode = step2();
-      // break;
-      // case 3: // Reverse gear back to bottom center position
-      // currentMode = step3();
-      // break;
-      // case 4: // First hallway
-      // currentMode = hallwayStep(90, 150, 5);
-      // break;
-      // case 5: // second hallway
-      // currentMode = hallwayStep(1, 100, 6);
-      // break;
-      // case 6: // third hallway
-      // currentMode = hallwayStep(270, 120, 7);
-      // break;
-      // case 7: // fourth hallway
-      // currentMode = hallwayStep(1, 100, 8);
-      // break;
-
-      // }
-      // #endregion
-
       // THINK
       switch (currentMode) {
         case LIDAR:
@@ -268,6 +246,9 @@ public class ProjectController2 {
         case TURN_BACK:
           if (bearingPasses(90))
             currentMode = LIDAR;
+          break;
+        case DROP_OFF:
+          currentMode = dropOff();
           break;
         case STOP:
           // if (detectColor("blue") == "NONE")
@@ -322,6 +303,9 @@ public class ProjectController2 {
           break;
         case HOME_IN_GREEN:
           // handled by homeInGreen
+          break;
+        case DROP_OFF:
+          // handled by dropOff
           break;
         case TURN_BACK:
           leftMotor.setVelocity(MAX_SPEED * 0.1);
@@ -412,14 +396,14 @@ public class ProjectController2 {
   }
 
   private static byte homeInBlue(float[] lidarValues) {
-    final double STOP_THRESH = 70.0 / 100; // m
+    final double STOP_THRESH = 120.0 / 100; // m
     boolean frontCollide = leftAheadSensor.getValue() <= STOP_THRESH || rightAheadSensor.getValue() <= STOP_THRESH;
     String pos = detectColor("blue");
     if (pos == "NONE" || frontCollide) {
       if (!hasPayload) {
         return HOME_IN_GREEN;
       } else {
-        return STOP;
+        return DROP_OFF;
       }
     }
     homeMotors(pos, 0.5);
@@ -431,7 +415,7 @@ public class ProjectController2 {
     if (jarDetectedSensor.getValue() == 1) {
       leftMotor.setVelocity(0);
       rightMotor.setVelocity(0);
-      openCloseGripper(0.01f);
+      openCloseGripper(0.03f);
       delay(1000);
       // liftLowerGripper(-0.025f);
       // delay(1000);
@@ -446,6 +430,82 @@ public class ProjectController2 {
 
     homeMotors(pos, 0.3);
     return HOME_IN_GREEN;
+  }
+
+  private static byte dropOff() {
+    if (!bearingPasses(90)) {
+      alignTo(90);
+      return DROP_OFF;
+    }
+
+    int[] doorway = findDoorwayCoords(lidarValues);
+    int x = doorway[0] + (doorway[2] - doorway[0]) / 2;
+    int y = doorway[1] + (doorway[3] - doorway[1]) / 2;
+
+    if (x == 0 && y == 0) {
+      leftMotor.setVelocity(0);
+      rightMotor.setVelocity(0);
+      openCloseGripper(0.099f);
+      delay(500);
+      leftMotor.setVelocity(-MAX_SPEED);
+      rightMotor.setVelocity(-MAX_SPEED);
+      delay(500);
+      leftMotor.setVelocity(0);
+      rightMotor.setVelocity(0);
+      alignTo(-170);
+      delay(2000);
+      leftMotor.setVelocity(MAX_SPEED);
+      rightMotor.setVelocity(MAX_SPEED);
+      delay(500);
+      return LIDAR;
+    }
+
+    moveFrom(0, 0, x, y);
+    hasPayload = false;
+    return DROP_OFF;
+  }
+
+  private static int[] findDoorwayCoords(float lidarValues[]) {
+    final int ADJACENCY_TOLERANCE = 15; // cm
+    int leftX, leftY, rightX, rightY;
+    leftX = leftY = rightX = rightY = -1;
+
+    // Find left doorway gap
+    for (int i = 0; i < lidarValues.length - 1; i++) {
+      double rangeCM = lidarValues[i] * 100;
+      double nextRangeCM = lidarValues[i + 1] * 100;
+
+      if (Math.abs(rangeCM - nextRangeCM) > ADJACENCY_TOLERANCE) {
+        int leftDoorwayAngle = getCompassReadingInDegrees() + 90 - i;
+
+        leftX = (int) (rangeCM * cos(leftDoorwayAngle));
+        leftY = (int) (rangeCM * sin(leftDoorwayAngle));
+
+        break;
+      }
+    }
+
+    // Find right doorway gap
+    for (int i = lidarValues.length - 1; i > 0; i--) {
+      double rangeCM = lidarValues[i] * 100;
+      double prevRangeCM = lidarValues[i - 1] * 100;
+
+      if (Math.abs(rangeCM - prevRangeCM) > ADJACENCY_TOLERANCE) {
+        int rightDoorwayAngle = getCompassReadingInDegrees() + 90 - i;
+
+        rightX = (int) (rangeCM * cos(rightDoorwayAngle));
+        rightY = (int) (rangeCM * sin(rightDoorwayAngle));
+
+        break;
+      }
+    }
+
+    boolean somethingNotDetected = leftX == -1 || leftY == -1 || rightX == -1 || rightY == -1;
+
+    if (somethingNotDetected || !isDoorway(leftX, leftY, rightX, rightY))
+      return new int[] { 0, 0, 0, 0 };
+
+    return new int[] { leftX, leftY, rightX, rightY };
   }
   // #endregion
 }
