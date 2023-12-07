@@ -38,9 +38,10 @@ public class ProjectController2 {
   private static final byte HOME_IN_GREEN = 11;
   private static final byte TURN_BACK = 12;
   private static final byte DROP_OFF = 13;
+  private static final byte AIM_AND_WAIT = 14;
   private static final String[] MODE_NAMES = { "STRAIGHT", "SPIN_LEFT", "SPIN_RIGHT", "CURVE_LEFT", "CURVE_RIGHT",
       "PIVOT_LEFT", "PIVOT_RIGHT", "STOP", "STRAIGHT_SLOW", "LIDAR", "HOME_IN_BLUE", "HOME_IN_GREEN", "TURN_BACK",
-      "DROP_OFF" };
+      "DROP_OFF", "AIM_AND_WAIT" };
 
   private static Robot robot;
   private static Motor leftMotor;
@@ -227,6 +228,7 @@ public class ProjectController2 {
 
     // Run the robot
     openCloseGripper(0.099f);
+    liftLowerGripper(0.001f);
     while (robot.step(timeStep) != -1) {
       // SENSE: Read the sensors
       lidarValues = lidar.getRangeImage();
@@ -234,14 +236,16 @@ public class ProjectController2 {
       // THINK
       switch (currentMode) {
         case LIDAR:
-          if (detectColor("blue") != "NONE")
-            currentMode = HOME_IN_BLUE;
+          currentMode = lidarGuidedMove();
           break;
         case HOME_IN_BLUE:
           currentMode = homeInBlue(lidarValues);
           break;
         case HOME_IN_GREEN:
           currentMode = homeInGreen();
+          break;
+        case AIM_AND_WAIT:
+          currentMode = aimAndWait();
           break;
         case TURN_BACK:
           if (bearingPasses(90))
@@ -304,6 +308,9 @@ public class ProjectController2 {
         case HOME_IN_GREEN:
           // handled by homeInGreen
           break;
+        case AIM_AND_WAIT:
+          // handled by aimAndWait
+          break;
         case DROP_OFF:
           // handled by dropOff
           break;
@@ -318,7 +325,10 @@ public class ProjectController2 {
   }
 
   // #region
-  private static void lidarGuidedMove() {
+  private static byte lidarGuidedMove() {
+    if (detectColor("blue") != "NONE")
+      return HOME_IN_BLUE;
+
     double centerX, centerY;
     centerX = centerY = 0;
     for (int i = 0; i < lidarValues.length; i++) {
@@ -331,6 +341,8 @@ public class ProjectController2 {
     centerX /= lidarValues.length;
     centerY /= lidarValues.length;
     moveFrom(0, 0, centerX, centerY);
+
+    return LIDAR;
   }
 
   private static String detectColor(String color) {
@@ -401,7 +413,7 @@ public class ProjectController2 {
     String pos = detectColor("blue");
     if (pos == "NONE" || frontCollide) {
       if (!hasPayload) {
-        return HOME_IN_GREEN;
+        return AIM_AND_WAIT;
       } else {
         return DROP_OFF;
       }
@@ -415,20 +427,30 @@ public class ProjectController2 {
     if (jarDetectedSensor.getValue() == 1) {
       leftMotor.setVelocity(0);
       rightMotor.setVelocity(0);
+      delay(500);
       openCloseGripper(0.03f);
       delay(1000);
-      // liftLowerGripper(-0.025f);
-      // delay(1000);
-      // liftLowerGripper(-0.025f);
-      // delay(200);
       hasPayload = true;
-      leftMotor.setVelocity(-1 * MAX_SPEED * 0.1);
-      rightMotor.setVelocity(-1 * MAX_SPEED * 0.1);
-      delay(2000);
+      leftMotor.setVelocity(-1 * MAX_SPEED * 0.2);
+      rightMotor.setVelocity(-1 * MAX_SPEED * 0.2);
+      delay(3000);
       return TURN_BACK;
     }
-
     homeMotors(pos, 0.3);
+    return HOME_IN_GREEN;
+  }
+
+  private static byte aimAndWait() {
+    if (detectColor("green") == "NONE") {
+      if (!bearingPasses(-140)) {
+        alignTo(-140);
+      } else {
+        leftMotor.setVelocity(0);
+        rightMotor.setVelocity(0);
+      }
+      return AIM_AND_WAIT;
+    }
+    delay(2000);
     return HOME_IN_GREEN;
   }
 
@@ -443,6 +465,9 @@ public class ProjectController2 {
     int y = doorway[1] + (doorway[3] - doorway[1]) / 2;
 
     if (x == 0 && y == 0) {
+      leftMotor.setVelocity(MAX_SPEED * 0.3);
+      rightMotor.setVelocity(MAX_SPEED * 0.3);
+      delay(500);
       leftMotor.setVelocity(0);
       rightMotor.setVelocity(0);
       openCloseGripper(0.099f);
