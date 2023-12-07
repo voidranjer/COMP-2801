@@ -22,6 +22,9 @@ public class ProjectController2 {
   private static final double MAX_SPEED = 12.3;
   private static final double COMPASS_THRESH = 1; // degrees
   private static final double CAM_THRESH = 10;
+  private static final float GRIPPER_MAX = 0.05f;
+  private static final float GRIPPER_MIN = 0.03f;
+  private static final int NUM_PAYLOAD = 5;
 
   // Various modes for the robot to be in
   private static final byte STRAIGHT = 0;
@@ -60,11 +63,13 @@ public class ProjectController2 {
   private static Accelerometer accelerometer;
   private static Camera camera;
 
+  // Runtime
   private static byte currentMode = LIDAR;
   private static int timeStep = 0;
   private static int step = 0;
   private static float lidarValues[] = null;
   private static boolean hasPayload = false;
+  private static int numDelivered = 0;
 
   // Wait for a certain number of milliseconds
   private static void delay(int milliseconds) {
@@ -227,7 +232,7 @@ public class ProjectController2 {
     // #endregion
 
     // Run the robot
-    openCloseGripper(0.05f);
+    openCloseGripper(GRIPPER_MAX);
     liftLowerGripper(0.001f);
     while (robot.step(timeStep) != -1) {
       // SENSE: Read the sensors
@@ -298,6 +303,8 @@ public class ProjectController2 {
         case STOP:
           leftMotor.setVelocity(0);
           rightMotor.setVelocity(0);
+          delay(500);
+          System.exit(0);
           break;
         case LIDAR:
           lidarGuidedMove();
@@ -319,6 +326,8 @@ public class ProjectController2 {
           rightMotor.setVelocity(-1 * MAX_SPEED * 0.1);
           break;
         default:
+          leftMotor.setVelocity(0);
+          rightMotor.setVelocity(0);
           break;
       }
     }
@@ -326,6 +335,9 @@ public class ProjectController2 {
 
   // #region
   private static byte lidarGuidedMove() {
+    if (numDelivered >= NUM_PAYLOAD)
+      return STOP;
+
     if (detectColor("blue") != "NONE")
       return HOME_IN_BLUE;
 
@@ -419,6 +431,8 @@ public class ProjectController2 {
       if (!hasPayload) {
         return AIM_AND_WAIT;
       } else {
+        hasPayload = false;
+        numDelivered++;
         return DROP_OFF;
       }
     }
@@ -432,7 +446,7 @@ public class ProjectController2 {
       leftMotor.setVelocity(0);
       rightMotor.setVelocity(0);
       delay(500);
-      openCloseGripper(0.03f);
+      openCloseGripper(GRIPPER_MIN);
       delay(500);
       hasPayload = true;
       leftMotor.setVelocity(-1 * MAX_SPEED * 0.2);
@@ -470,12 +484,12 @@ public class ProjectController2 {
     int y = doorway[1] + (doorway[3] - doorway[1]) / 2;
 
     if (x == 0 && y == 0) {
-      leftMotor.setVelocity(MAX_SPEED * 0.3);
-      rightMotor.setVelocity(MAX_SPEED * 0.3);
-      delay(500);
+      leftMotor.setVelocity(MAX_SPEED * 0.1);
+      rightMotor.setVelocity(MAX_SPEED * 0.1);
+      delay(1000);
       leftMotor.setVelocity(0);
       rightMotor.setVelocity(0);
-      openCloseGripper(0.05f);
+      openCloseGripper(GRIPPER_MAX);
       delay(500);
       leftMotor.setVelocity(-MAX_SPEED);
       rightMotor.setVelocity(-MAX_SPEED);
@@ -491,7 +505,6 @@ public class ProjectController2 {
     }
 
     moveFrom(0, 0, x, y);
-    hasPayload = false;
     return DROP_OFF;
   }
 
