@@ -1,5 +1,5 @@
 
-// Author: Adam Luczaj (SN:101196424)
+// Author: Adam Luczaj (SN: 101196424)
 import java.awt.Point;
 import java.util.ArrayList;
 import com.cyberbotics.webots.controller.Camera;
@@ -23,24 +23,18 @@ public class ProjectController1 {
   static final byte GREEN_STOP_AND_PICK_UP = 3;
 
   static final byte TURN_TO_WALL_ONE = 4; // go south
-  static final byte BOOK_IT_TO_WALL_ONE = 5; // move south
+  static final byte MOVE_TOWARDS_WALL_ONE = 5; // move to wall one
   static final byte TURN_TO_WALL_TWO = 6; // turn east
-  static final byte BOOK_IT_TO_WALL_TWO = 7; // move east
+  static final byte MOVE_TOWARDS_WALL_TWO = 7; // move to wall two
 
   static final byte DROP_OFF_THEN_BACK_UP = 8; // drop off and back up
 
   static final byte LEFT = 9;
   static final byte RIGHT = 10;
   static final byte NONE = 11;
+  static final byte STRAIGHT = 12;
 
-  static final byte SAFE_SPEED = 5;
-  static final byte FULL_SPEED = 7;
-
-  static final byte STRAIGHT = 13; // TODO: Fix this
-  // static final byte SPIN_LEFT = 14;
-  // static final byte PIVOT_RIGHT = 15;
-  // static final byte CURVE_LEFT = 16;
-  // static final byte CURVE_RIGHT = 17;
+  // static final byte SAFE_SPEED = 4;
 
   private static Robot robot;
   private static Motor leftMotor;
@@ -97,41 +91,10 @@ public class ProjectController1 {
     return (int) (bearing);
   }
 
-  /*
-   * Adam Notes:
-   * - Base majority of code on lab 3
-   * - First we want to home into a jar (will be a problem for jars already
-   * delivered but we don't care about that currently), we want to
-   * home in on the colour green.
-   * - When we are right in front of the green jar, we want to stop, open the
-   * arms, go forward a little bit,
-   * clamp onto the jar and then home in on the colour blue which is the
-   * destination.
-   * - When we reach the destination we drop off the can and increment our
-   * droppedOffJarsCount variable.
-   * - If you detect something to the left and right and not ahead then you are
-   * inside the doorway
-   * - Jar needs to be placed inside the doorway.
-   */
-
-  /*
-   * - TODO: Need better robot pickup code.
-   * - TODO: Need some avoid code for when looking for the jar.
-   * - TODO: Need some better drop off the jar code (when you drop it off where
-   * should)
-   * the robot be.
-   */
-
-  /*
-   * ASK TA:
-   * - Show them program running, what they think of it.
-   * - Ask about how this is going to be marked how to make the video etc.
-   * - Ask about robot spinning at the end.
-   * - Ask about robot tipping over other jars when I deliver them.
-   */
-
   // This is where it all begins
   public static void main(String[] args) {
+    // System.exit(0);
+  
     robot = new Robot();
     int timeStep = (int) Math.round(robot.getBasicTimeStep());
 
@@ -178,21 +141,16 @@ public class ProjectController1 {
 
     // Run the robot
     byte currentMode = GREEN_WANDER;
+    byte previousMode = GREEN_WANDER;
 
-    // related to jars and homing
     int droppedOffJarsCount = 0;
-    boolean homeOnGreen = true; // when true home in on green, when false home in on blue
-    boolean deliveringBlueAreaDetected = false;
-    int deliveringToBlueAreaNoLongerDetected = 0;
-
-    byte PREVIOUS_MODE = GREEN_WANDER;
 
     // related to speed/turning
     int leftSpeed, rightSpeed;
     leftSpeed = rightSpeed = 0;
     byte turnCount = 0;
-    // byte currentDirection = NONE;
 
+    // degree turning thresholds
     int TURN_TO_WALL_ONE_THRESHOLD_1 = -92;
     int TURN_TO_WALL_ONE_THRESHOLD_2 = -88;
 
@@ -200,26 +158,27 @@ public class ProjectController1 {
     int TURN_TO_WALL_TWO_THRESHOLD_2 = 1;
 
     byte currentDirection = STRAIGHT;
+    byte SAFE_SPEED = 6; // change speed during runtime, be a little faster at the start, then go slower
 
-    // Open the claws
+    // Lower the gripper as low as you can
     liftLowerGripper((float) 0.001);
-    for (int i = 0; i < 50; i++) {
+    for (int i = 0; i < 15; i++) {
       robot.step(timeStep);
     }
+
+    // Open the claws
     openCloseGripper((float) 0.099);
-    for (int i = 0; i < 50; i++) {
+    for (int i = 0; i < 15; i++) {
       robot.step(timeStep);
     }
 
     while (robot.step(timeStep) != -1) {
-      // SENSE: Read the sensors
       int[] image = camera.getImage();
 
       // get side sensor values.
       boolean leftAhead = (leftAheadSensor.getValue() < 0.5);
       boolean rightAhead = (rightAheadSensor.getValue() < 0.5);
-      boolean leftSide = (leftSideSensor.getValue() < 0.5);
-      // boolean leftAngled = (leftSideSensor.getValue() < 0.5);
+      boolean leftSide = (leftSideSensor.getValue() < 0.4);
 
       // get green jar sensor values
       int jarLeftCount = 0;
@@ -241,6 +200,7 @@ public class ProjectController1 {
             int blue = Camera.imageGetBlue(image, 64, i, j);
             if (green > 60 && red < 50 && blue < 50) {
               jarLeftCount++;
+              // System.out.println("Robot 1: leftCount++");
               break;
             }
           }
@@ -254,6 +214,7 @@ public class ProjectController1 {
             int blue = Camera.imageGetBlue(image, 64, i, j);
             if (green > 60 && red < 50 && blue < 50) {
               jarCenterCount++;
+              // System.out.println("Robot 1: leftCount++");
               break;
             }
           }
@@ -267,18 +228,27 @@ public class ProjectController1 {
             int blue = Camera.imageGetBlue(image, 64, i, j);
             if (green > 60 && red < 50 && blue < 50) {
               jarRightCount++;
+              // System.out.println("Robot 1: leftCount++");
               break;
             }
           }
         }
 
+        // System.out.println("Robot 1: We are looking for a Green Jar -- leftCount: " +
+        // jarLeftCount + " centerCount " + jarCenterCount + " rightCount " +
+        // jarRightCount);
+
         if (jarLeftCount > jarRightCount) {
+          // System.out.println("Robot 1: Green Jar is on the left side");
           jarDetectedLeft = true;
         } else if (jarRightCount > jarLeftCount) {
+          // System.out.println("Robot 1: Green Jar is on the right side");
           jarDetectedRight = true;
         } else if (jarCenterCount > 1) {
+          // System.out.println("Robot 1: Green Jar is in the middle.");
           jarDetectedCenter = true;
         } else {
+          // System.out.println("Robot 1: Green jar not detected.");
           jarNotDetected = true;
         }
 
@@ -286,10 +256,12 @@ public class ProjectController1 {
 
       int compassValue = getCompassReadingInDegrees();
 
-      // THINK: Make a decision as to what MODE to be in (for green jar)
+      // THINK: Make a decision as to what MODE to be in
       switch (currentMode) {
 
         case GREEN_WANDER:
+
+          // System.out.println("Robot 1 -- THINK -- GREEN_WANDER");
 
           // if the green jar is detected, we want to home in on it
           if ((jarDetectedLeft || jarDetectedCenter || jarDetectedRight)) {
@@ -301,6 +273,8 @@ public class ProjectController1 {
 
         case GREEN_HOME_IN:
 
+          // System.out.println("Robot 1 -- THINK -- GREEN_HOME_IN");
+
           // we detect the green jar
           if (jarDetectedSensor.getValue() >= 0.9) {
             currentMode = GREEN_STOP_AND_PICK_UP;
@@ -311,11 +285,11 @@ public class ProjectController1 {
 
         case GREEN_AVOID:
 
-          // TODO: add for side sensors.
+          // System.out.println("Robot 1 -- THINK -- GREEN_AVOID");
 
           // we no longer are near a wall.
           if (!(leftAhead || rightAhead)) {
-            currentMode = PREVIOUS_MODE;
+            currentMode = previousMode;
             break;
           }
 
@@ -323,20 +297,25 @@ public class ProjectController1 {
 
         case GREEN_STOP_AND_PICK_UP:
 
+          // System.out.println("Robot 1 -- THINK -- GREEN_STOP_AND_PICK_UP");
           currentMode = TURN_TO_WALL_ONE;
 
           break;
 
         case TURN_TO_WALL_ONE:
 
+          // System.out.println("Robot 1 -- THINK -- TURN_TO_WALL_ONE");
+
           if (compassValue >= TURN_TO_WALL_ONE_THRESHOLD_1 && compassValue <= TURN_TO_WALL_ONE_THRESHOLD_2) {
-            currentMode = BOOK_IT_TO_WALL_ONE;
+            currentMode = MOVE_TOWARDS_WALL_ONE;
             break;
           }
 
           break;
 
-        case BOOK_IT_TO_WALL_ONE:
+        case MOVE_TOWARDS_WALL_ONE:
+
+          // System.out.println("Robot 1 -- THINK -- MOVE_TOWARDS_WALL_ONE");
 
           if (leftAhead && rightAhead) {
             currentMode = TURN_TO_WALL_TWO;
@@ -347,14 +326,18 @@ public class ProjectController1 {
 
         case TURN_TO_WALL_TWO:
 
+          // System.out.println("Robot 1 -- THINK -- TURN_TO_WALL_TWO");
+
           if (compassValue >= TURN_TO_WALL_TWO_THRESHOLD_1 && compassValue <= TURN_TO_WALL_TWO_THRESHOLD_2) {
-            currentMode = BOOK_IT_TO_WALL_TWO;
+            currentMode = MOVE_TOWARDS_WALL_TWO;
             break;
           }
 
           break;
 
-        case BOOK_IT_TO_WALL_TWO:
+        case MOVE_TOWARDS_WALL_TWO:
+
+          // System.out.println("Robot 1 -- THINK -- MOVE_TOWARDS_WALL_TWO");
 
           if (leftSide) {
             currentMode = DROP_OFF_THEN_BACK_UP;
@@ -364,6 +347,8 @@ public class ProjectController1 {
           break;
 
         case DROP_OFF_THEN_BACK_UP:
+
+          // System.out.println("Robot 1 -- THINK -- DROP_OFF_THEN_BACK_UP");
 
           currentMode = GREEN_WANDER;
           break;
@@ -379,6 +364,8 @@ public class ProjectController1 {
 
         // what we want the robot to do when its looking for a jar
         case GREEN_WANDER:
+
+          // System.out.println("Robot 1 -- REACT -- GREEN_WANDER");
 
           if (turnCount > 0) {
             if (currentDirection == LEFT)
@@ -399,20 +386,22 @@ public class ProjectController1 {
         // what we want the robot to do when it has detected a jar
         case GREEN_HOME_IN:
 
+          // System.out.println("Robot 1 -- REACT -- GREEN_HOME_IN");
+
           if (jarDetectedCenter) {
-            leftSpeed = SAFE_SPEED; // was SAFE_SPEED
-            rightSpeed = SAFE_SPEED; // was SAFE_SPEED
+            leftSpeed = SAFE_SPEED;
+            rightSpeed = SAFE_SPEED;
           }
 
           else if (jarDetectedRight) {
 
-            leftSpeed = (SAFE_SPEED); // was 6
-            rightSpeed = (SAFE_SPEED / 2); // was 3
+            leftSpeed = (SAFE_SPEED);
+            rightSpeed = (SAFE_SPEED / 2);
           }
 
           else if (jarDetectedLeft) {
-            leftSpeed = (SAFE_SPEED / 2); // was 3
-            rightSpeed = (SAFE_SPEED); // was 6
+            leftSpeed = (SAFE_SPEED / 2);
+            rightSpeed = (SAFE_SPEED);
           }
 
           turnCount = 0;
@@ -420,6 +409,8 @@ public class ProjectController1 {
 
         // what we want the robot to do when its about to hit a wall
         case GREEN_AVOID:
+
+          // System.out.println("Robot 1 -- REACT -- GREEN_AVOID");
 
           random = Math.random();
 
@@ -437,6 +428,8 @@ public class ProjectController1 {
 
         // what we want the robot to do when it gets in front of a green jar
         case GREEN_STOP_AND_PICK_UP:
+
+          // System.out.println("Robot 1 -- REACT -- GREEN_STOP_AND_PICK_UP");
 
           // stop the robot
           leftSpeed = 0;
@@ -471,37 +464,36 @@ public class ProjectController1 {
             robot.step(timeStep);
           }
 
-          // lift the object
-          // liftLowerGripper((float)-0.025);
-          // for (int i = 0; i < 100; i++) { robot.step(timeStep); }
-
           break;
 
         case TURN_TO_WALL_ONE:
 
+          // System.out.println("Robot 1 -- REACT -- MOVE_TOWARDS_WALL_ONE");
+
           if (compassValue < -90) {
-            // CURVE LEFT
+            // SPIN LEFT
             leftSpeed = (-1 * 2);
             rightSpeed = (2);
 
           }
 
           if (compassValue > -90) {
-            // CURVE RIGHT
+            // SPIN RIGHT
             leftSpeed = (2);
             rightSpeed = (-1 * 2);
           }
 
           break;
 
-        case BOOK_IT_TO_WALL_ONE:
+        case MOVE_TOWARDS_WALL_ONE:
 
-          // full speed ahead!
-          leftSpeed = SAFE_SPEED; // was FULL_SPEED
+          // System.out.println("Robot 1 -- REACT -- MOVE_TOWARDS_WALL_ONE");
+
+          leftSpeed = SAFE_SPEED;
           rightSpeed = SAFE_SPEED;
 
           if (compassValue < -90) {
-            // SPIN LEFT!
+            // CURVE LEFT
             leftSpeed = (SAFE_SPEED - 1);
             rightSpeed = (SAFE_SPEED);
           }
@@ -516,8 +508,10 @@ public class ProjectController1 {
 
         case TURN_TO_WALL_TWO:
 
+          // System.out.println("Robot 1 -- REACT -- TURN_TO_WALL_TWO");
+
           if (compassValue < 0) {
-            // CURVE LEFT
+            // SPIN LEFT
             leftSpeed = (-1 * 2);
             rightSpeed = (2);
 
@@ -531,7 +525,9 @@ public class ProjectController1 {
 
           break;
 
-        case BOOK_IT_TO_WALL_TWO:
+        case MOVE_TOWARDS_WALL_TWO:
+
+          // System.out.println("Robot 1 -- REACT -- MOVE_TOWARDS_WALL_TWO");
 
           if (compassValue < 0) {
             // CURVE LEFT
@@ -549,6 +545,8 @@ public class ProjectController1 {
 
         case DROP_OFF_THEN_BACK_UP:
 
+          // System.out.println("Robot 1 -- REACT -- DROP_OFF_THEN_BACK_UP");
+
           // stop the robot.
           leftSpeed = 0;
           rightSpeed = 0;
@@ -560,7 +558,6 @@ public class ProjectController1 {
 
           // drop the cup
           openCloseGripper((float) 0.099);
-          // liftLowerGripper((float)-0.01);
           for (int i = 0; i < 50; i++) {
             robot.step(timeStep);
           }
@@ -585,6 +582,8 @@ public class ProjectController1 {
             robot.step(timeStep);
           } // turn over 180 degrees
 
+          SAFE_SPEED = 4; // slow the robot down
+
           leftSpeed = SAFE_SPEED;
           rightSpeed = SAFE_SPEED;
 
@@ -592,22 +591,25 @@ public class ProjectController1 {
 
       }
 
-      PREVIOUS_MODE = currentMode;
+      previousMode = currentMode;
 
       leftMotor.setVelocity(leftSpeed);
       rightMotor.setVelocity(rightSpeed);
 
+      // System.out.println("---------------");
+
       // exit the program, jars are all dropped off
       if (droppedOffJarsCount == 5) {
+        System.out.println("Robot 1: End of program " + droppedOffJarsCount + " jars delivered.");
         leftMotor.setVelocity(0);
         rightMotor.setVelocity(0);
-        break;
-        // System.exit(0); // exit program.
+        for (int i = 0; i < 30; i++) {
+          robot.step(timeStep);
+        } // stop the robot (otherwise it will spin)
+
+        System.exit(0); // exit program.
       }
 
     }
-
-    System.exit(0);
-
   }
 }

@@ -266,7 +266,7 @@ public class ProjectController2 {
       }
 
       // REACT: Move motors accordingly
-      System.out.println(MODE_NAMES[currentMode]);
+      // System.out.println(MODE_NAMES[currentMode]);
       switch (currentMode) {
         case STRAIGHT:
           leftMotor.setVelocity(MAX_SPEED);
@@ -414,12 +414,12 @@ public class ProjectController2 {
       rightMotor.setVelocity(MAX_SPEED * speedFactor);
     }
     if (pos == "LEFT") {
-      leftMotor.setVelocity(-1 * MAX_SPEED * 0.1);
+      leftMotor.setVelocity(0);
       rightMotor.setVelocity(MAX_SPEED * 0.1);
     }
     if (pos == "RIGHT") {
       leftMotor.setVelocity(MAX_SPEED * 0.1);
-      rightMotor.setVelocity(-1 * MAX_SPEED * 0.1);
+      rightMotor.setVelocity(0);
     }
   }
 
@@ -466,7 +466,9 @@ public class ProjectController2 {
       return AIM_AND_WAIT;
     }
     if (detectColor("green") != "NONE") {
-      delay(2000);
+      // Don't fight the Zone 1 robot for the first jar
+      if (numDelivered == 0)
+        delay(2000);
       return HOME_IN_GREEN;
     }
 
